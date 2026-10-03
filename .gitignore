@@ -1,0 +1,57 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code related
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Symbol processing related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will create this folder
+.gradle/
+
+# Local configuration files
+local.properties
+**/android/key.properties
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/ephemeral/
+**/ios/Pods/
+**/ios/Podfile.lock
+
+# Firebase config files that may contain sensitive keys (keep template in repo)
+# google-services.json
+# GoogleService-Info.plist
+# firebase_options.dart
+
+# Exceptions to above rules.
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
