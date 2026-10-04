@@ -80,7 +80,7 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.Border.all(color: AppColors.cardBorder),
+                border: Border.all(color: AppColors.cardBorder),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.04),
@@ -281,7 +281,7 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.Border.all(color: AppColors.cardBorder),
+                      border: Border.all(color: AppColors.cardBorder),
                     ),
                     padding: const EdgeInsets.all(10),
                     child: Column(
@@ -360,7 +360,7 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.Border.all(color: AppColors.cardBorder),
+                      border: Border.all(color: AppColors.cardBorder),
                     ),
                     child: Row(
                       children: [
