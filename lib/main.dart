@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'services/app_state_service.dart';
 import 'features/member1_discovery_auth/home_discovery_screen.dart';
@@ -7,8 +9,11 @@ import 'features/member3_payment_reviews/provider_dashboard_screen.dart';
 import 'features/member4_notifications_history/my_bookings_screen.dart';
 import 'features/member4_notifications_history/provider_notifications_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const FixItHomeApp());
 }
 
