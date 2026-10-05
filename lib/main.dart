@@ -26,6 +26,52 @@ class FixItHomeApp extends StatelessWidget {
       title: 'FixIt Home',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      builder: (context, child) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            // When opened on desktop / wide browser screen, frame as iPhone 390x844
+            if (constraints.maxWidth > 500) {
+              final double targetHeight = constraints.maxHeight < 860
+                  ? constraints.maxHeight - 24
+                  : 844.0;
+
+              return Scaffold(
+                backgroundColor: const Color(0xFF0F172A),
+                body: Center(
+                  child: Container(
+                    width: 390,
+                    height: targetHeight,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(36),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.45),
+                          blurRadius: 36,
+                          spreadRadius: 4,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: const Color(0xFF334155),
+                        width: 4,
+                      ),
+                    ),
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        size: Size(390, targetHeight),
+                      ),
+                      child: child ?? const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              );
+            }
+            return child ?? const SizedBox.shrink();
+          },
+        );
+      },
       home: const MainNavigationShell(),
     );
   }
@@ -67,20 +113,27 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
               // Top Viva Role Switcher Bar (Quickly switch between Homeowner & Provider views)
               Container(
                 color: AppColors.primaryDark,
-                padding: const EdgeInsets.only(top: 36, bottom: 8, left: 16, right: 16),
+                padding: const EdgeInsets.only(top: 14, bottom: 8, left: 12, right: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.group_work, color: AppColors.accent, size: 18),
-                        const SizedBox(width: 8),
-                        Text(
-                          'KND_HCI_G05 | Role: ${isProvider ? "Provider View" : "Homeowner View"}',
-                          style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const Icon(Icons.group_work, color: AppColors.accent, size: 16),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              'G05 | ${isProvider ? "Provider" : "Homeowner"} View',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     InkWell(
                       onTap: () {
                         final newRole = isProvider ? 'homeowner' : 'provider';
@@ -94,21 +147,22 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
                         );
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: AppColors.accent,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               isProvider ? Icons.swap_horiz : Icons.storefront,
-                              size: 14,
+                              size: 13,
                               color: AppColors.primaryDark,
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              isProvider ? 'Switch to Homeowner' : 'Switch to Provider',
+                              isProvider ? 'To Homeowner' : 'To Provider',
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,

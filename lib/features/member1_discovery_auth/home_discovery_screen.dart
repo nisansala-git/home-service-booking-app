@@ -32,42 +32,50 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 12,
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(7),
               decoration: BoxDecoration(
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.home_repair_service, color: AppColors.textLight, size: 20),
+              child: const Icon(Icons.home_repair_service, color: AppColors.textLight, size: 18),
             ),
-            const SizedBox(width: 10),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('FixIt Home', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                Text('Verified Home Services', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-              ],
+            const SizedBox(width: 8),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('FixIt Home', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                  Text('Verified Home Services', style: TextStyle(fontSize: 10, color: AppColors.textSecondary), overflow: TextOverflow.ellipsis),
+                ],
+              ),
             ),
           ],
         ),
         actions: [
           // Registration CTA as per Milestone 02 Variant A design
           TextButton.icon(
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              visualDensity: VisualDensity.compact,
+            ),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ProviderRegistrationScreen()),
               );
             },
-            icon: const Icon(Icons.person_add_alt_1, size: 18, color: AppColors.primary),
+            icon: const Icon(Icons.person_add_alt_1, size: 16, color: AppColors.primary),
             label: const Text(
-              'Join as Pro',
-              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 13),
+              'Join Pro',
+              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 12),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
         ],
       ),
       body: SingleChildScrollView(
@@ -233,12 +241,14 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Browse by Category',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                const Flexible(
+                  child: Text(
+                    'Browse by Category',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
                 TextButton(
@@ -261,9 +271,9 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
               itemCount: AppConstants.serviceCategories.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.88,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.85,
               ),
               itemBuilder: (context, index) {
                 final cat = AppConstants.serviceCategories[index];
@@ -283,20 +293,21 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppColors.cardBorder),
                     ),
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         CircleAvatar(
-                          radius: 24,
+                          radius: 20,
                           backgroundColor: AppColors.surfaceMuted,
-                          child: Icon(cat['icon'] as IconData, color: AppColors.primary, size: 24),
+                          child: Icon(cat['icon'] as IconData, color: AppColors.primary, size: 20),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         Text(
                           cat['name'] as String,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
                           ),
@@ -322,12 +333,14 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Providers Near You',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                const Flexible(
+                  child: Text(
+                    'Providers Near You',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
                 Text(
@@ -386,39 +399,58 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                             children: [
                               Row(
                                 children: [
-                                  Text(
-                                    p.name,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: AppColors.textPrimary,
+                                  Flexible(
+                                    child: Text(
+                                      p.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                        color: AppColors.textPrimary,
+                                      ),
                                     ),
                                   ),
                                   if (p.isVerified) ...[
                                     const SizedBox(width: 4),
-                                    const Icon(Icons.verified, size: 16, color: AppColors.primary),
+                                    const Icon(Icons.verified, size: 15, color: AppColors.primary),
                                   ],
                                 ],
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                '${p.category.toUpperCase()} • ${p.experienceYears} yrs exp',
-                                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                '${p.category.toUpperCase()} • ${p.experienceYears}y exp',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
                               ),
                               const SizedBox(height: 4),
-                              Row(
+                              Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: 8,
+                                runSpacing: 2,
                                 children: [
-                                  const Icon(Icons.star, size: 14, color: AppColors.starFilled),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${p.rating} (${p.reviewCount})',
-                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(Icons.star, size: 13, color: AppColors.starFilled),
+                                      const SizedBox(width: 2),
+                                      Text(
+                                        '${p.rating} (${p.reviewCount})',
+                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 12),
-                                  Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade500),
-                                  Text(
-                                    '${p.distanceKm} km',
-                                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.location_on_outlined, size: 13, color: Colors.grey.shade500),
+                                      const SizedBox(width: 2),
+                                      Text(
+                                        '${p.distanceKm} km',
+                                        style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
