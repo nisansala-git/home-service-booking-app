@@ -589,19 +589,22 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
             child: SafeArea(
               child: Row(
                 children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Starting from', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                      Text(
-                        'Rs. ${widget.provider.startingPrice.toInt()}',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
-                      ),
-                    ],
+                  // Price info — Flexible so Row can size everything proportionally
+                  Flexible(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Starting from', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                        Text(
+                          'Rs. ${widget.provider.startingPrice.toInt()}',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(width: 14),
-                  // Message Provider Button (Variant B)
+                  // Message Provider Button (Variant B) — intrinsic width
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -619,7 +622,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                     label: const Text('Chat', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(width: 8),
-                  // Check Availability CTA (Variant A)
+                  // Check Availability CTA — takes remaining space
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
