@@ -140,9 +140,12 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             onPressed: () {
               // CRUD: DELETE / Cancel Booking
               _appState.cancelBooking(activeBooking.id);
-              Navigator.pop(ctx);
-              Navigator.of(context).popUntil((r) => r.isFirst);
-              ScaffoldMessenger.of(context).showSnackBar(
+              final messenger = ScaffoldMessenger.of(context);
+              Navigator.of(ctx).pop();
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              }
+              messenger.showSnackBar(
                 const SnackBar(content: Text('Booking has been cancelled.')),
               );
             },
@@ -170,7 +173,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
         );
 
         return Scaffold(
-          appBar: const CustomAppBar(title: 'Booking Confirmed', showBack: false),
+          appBar: const CustomAppBar(title: 'Booking Confirmed'),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Column(
