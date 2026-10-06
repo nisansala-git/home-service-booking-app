@@ -64,6 +64,69 @@ void main() {
       expect(updated.status, 'deposit_paid');
     });
 
+    test('TC-02B [Member 2 Advanced CRUD]: Reschedule and Cancel booking (Update & Delete)', () {
+      final booking = appState.createBooking(
+        providerId: 'prov_kamal',
+        providerName: 'Kamal Perera',
+        customerId: 'user_poornima',
+        customerName: 'Poornima Madubashini',
+        customerPhone: '077 123 4567',
+        serviceCategory: 'plumbing',
+        serviceItem: 'Tap repair',
+        bookingDate: DateTime.now().add(const Duration(days: 2)),
+        timeSlot: '08:30 AM - 10:00 AM',
+        totalPrice: 1200.0,
+        depositAmount: 300.0,
+        address: '5 Wallowa ST',
+      );
+
+      // Update: Reschedule
+      appState.updateBookingDetails(
+        bookingId: booking.id,
+        newTimeSlot: '01:30 PM - 03:00 PM',
+        newNotes: 'Gate passcode is 1234',
+      );
+      final rescheduled = appState.bookings.firstWhere((b) => b.id == booking.id);
+      expect(rescheduled.timeSlot, '01:30 PM - 03:00 PM');
+      expect(rescheduled.notes, 'Gate passcode is 1234');
+
+      // Delete: Cancel booking
+      appState.cancelBooking(booking.id);
+      final cancelled = appState.bookings.firstWhere((b) => b.id == booking.id);
+      expect(cancelled.status, 'cancelled');
+    });
+
+    test('TC-02C [Member 2 Advanced CRUD]: Contract custom amendment & Review helpful vote (Create & Update)', () {
+      final booking = appState.bookings.first;
+      appState.addCustomScopeTerm(booking.id, 'Includes 30-day warranty on rubber washers');
+      final updated = appState.bookings.firstWhere((b) => b.id == booking.id);
+      expect(updated.customTerms.contains('Includes 30-day warranty on rubber washers'), isTrue);
+
+      final review = appState.reviews.first;
+      final initialVotes = review.helpfulVotes;
+      appState.voteHelpfulReview(review.id);
+      final updatedReview = appState.reviews.firstWhere((r) => r.id == review.id);
+      expect(updatedReview.helpfulVotes, initialVotes + 1);
+    });
+
+    test('TC-02D [Member 2 Advanced CRUD]: In-App Provider Chat messaging (Create & Delete)', () {
+      final initialCount = appState.chatMessages.length;
+      appState.sendChatMessage(
+        bookingId: 'BK-1001',
+        providerId: 'prov_kamal',
+        senderId: 'customer',
+        senderName: 'Poornima',
+        text: 'Where should you park?',
+      );
+      expect(appState.chatMessages.length, initialCount + 1);
+
+      final newMsg = appState.chatMessages.last;
+      expect(newMsg.text, 'Where should you park?');
+
+      appState.deleteChatMessage(newMsg.id);
+      expect(appState.chatMessages.any((m) => m.id == newMsg.id), isFalse);
+    });
+
     test('TC-03 [Member 3 CRUD]: Accept job request & Submit verified review (Update & Create)', () {
       final booking = appState.bookings.first;
       appState.updateBookingStatus(booking.id, 'in_progress');

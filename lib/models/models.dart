@@ -103,6 +103,7 @@ class Booking {
   final String notes;
   final bool isContractSigned;
   final String? signature;
+  final List<String> customTerms;
   final DateTime createdAt;
 
   Booking({
@@ -124,6 +125,7 @@ class Booking {
     this.notes = '',
     this.isContractSigned = false,
     this.signature,
+    this.customTerms = const [],
     required this.createdAt,
   });
 
@@ -147,6 +149,7 @@ class Booking {
       'notes': notes,
       'isContractSigned': isContractSigned,
       'signature': signature,
+      'customTerms': customTerms,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -171,6 +174,7 @@ class Booking {
       notes: map['notes'] ?? '',
       isContractSigned: map['isContractSigned'] ?? false,
       signature: map['signature'],
+      customTerms: List<String>.from(map['customTerms'] ?? []),
       createdAt: DateTime.tryParse(map['createdAt'] ?? '') ?? DateTime.now(),
     );
   }
@@ -184,6 +188,7 @@ class Review {
   final double rating;
   final String comment;
   final List<String> tags;
+  final int helpfulVotes;
   final DateTime createdAt;
 
   Review({
@@ -194,6 +199,7 @@ class Review {
     required this.rating,
     required this.comment,
     this.tags = const [],
+    this.helpfulVotes = 0,
     required this.createdAt,
   });
 
@@ -206,6 +212,7 @@ class Review {
       'rating': rating,
       'comment': comment,
       'tags': tags,
+      'helpfulVotes': helpfulVotes,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -219,6 +226,7 @@ class Review {
       rating: (map['rating'] ?? 5.0).toDouble(),
       comment: map['comment'] ?? '',
       tags: List<String>.from(map['tags'] ?? []),
+      helpfulVotes: map['helpfulVotes'] ?? 0,
       createdAt: DateTime.tryParse(map['createdAt'] ?? '') ?? DateTime.now(),
     );
   }
@@ -257,4 +265,44 @@ class AppNotification {
       'isRead': isRead,
     };
   }
+}
+
+class ChatMessage {
+  final String id;
+  final String bookingId;
+  final String providerId;
+  final String senderId; // 'customer' or 'provider'
+  final String senderName;
+  final String text;
+  final DateTime timestamp;
+
+  ChatMessage({
+    required this.id,
+    required this.bookingId,
+    required this.providerId,
+    required this.senderId,
+    required this.senderName,
+    required this.text,
+    required this.timestamp,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'bookingId': bookingId,
+    'providerId': providerId,
+    'senderId': senderId,
+    'senderName': senderName,
+    'text': text,
+    'timestamp': timestamp.toIso8601String(),
+  };
+
+  factory ChatMessage.fromMap(Map<String, dynamic> map, String docId) => ChatMessage(
+    id: docId,
+    bookingId: map['bookingId'] ?? '',
+    providerId: map['providerId'] ?? '',
+    senderId: map['senderId'] ?? '',
+    senderName: map['senderName'] ?? '',
+    text: map['text'] ?? '',
+    timestamp: DateTime.tryParse(map['timestamp'] ?? '') ?? DateTime.now(),
+  );
 }

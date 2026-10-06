@@ -178,12 +178,218 @@ class AppStateService extends ChangeNotifier {
     }
   }
 
-  // DELETE: Cancel booking
+  // FAVORITES CRUD (Member 2 - Provider Profile)
+  final Set<String> _favoriteProviderIds = {'prov_kamal'};
+  Set<String> get favoriteProviderIds => _favoriteProviderIds;
+
+  bool isFavorite(String providerId) => _favoriteProviderIds.contains(providerId);
+
+  void toggleFavorite(String providerId) {
+    if (_favoriteProviderIds.contains(providerId)) {
+      _favoriteProviderIds.remove(providerId);
+    } else {
+      _favoriteProviderIds.add(providerId);
+    }
+    notifyListeners();
+  }
+
+  // SLOT LOCKING & CONFLICT PREVENT (Member 2 - NFR007 Concurrency)
+  final Map<String, DateTime> _lockedSlots = {};
+
+  bool isSlotLocked(String slotKey) {
+    final lockedAt = _lockedSlots[slotKey];
+    if (lockedAt == null) return false;
+    // Release automatically after 10 minutes
+    if (DateTime.now().difference(lockedAt).inMinutes > 10) {
+      _lockedSlots.remove(slotKey);
+      return false;
+    }
+    return true;
+  }
+
+  void lockSlot(String slotKey) {
+    _lockedSlots[slotKey] = DateTime.now();
+    notifyListeners();
+  }
+
+  // UPDATE: Reschedule or modify booking details (Member 2 - Booking Confirmation)
+  void updateBookingDetails({
+    required String bookingId,
+    DateTime? newDate,
+    String? newTimeSlot,
+    String? newAddress,
+    String? newNotes,
+  }) {
+    final index = _bookings.indexWhere((b) => b.id == bookingId);
+    if (index != -1) {
+      final old = _bookings[index];
+      _bookings[index] = Booking(
+        id: old.id,
+        customerId: old.customerId,
+        customerName: old.customerName,
+        customerPhone: old.customerPhone,
+        providerId: old.providerId,
+        providerName: old.providerName,
+        serviceCategory: old.serviceCategory,
+        serviceItem: old.serviceItem,
+        bookingDate: newDate ?? old.bookingDate,
+        timeSlot: newTimeSlot ?? old.timeSlot,
+        totalPrice: old.totalPrice,
+        depositAmount: old.depositAmount,
+        remainingAmount: old.remainingAmount,
+        status: old.status,
+        address: newAddress ?? old.address,
+        notes: newNotes ?? old.notes,
+        isContractSigned: old.isContractSigned,
+        signature: old.signature,
+        customTerms: old.customTerms,
+        createdAt: old.createdAt,
+      );
+
+      createNotification(
+        recipientId: old.providerId,
+        title: 'Booking Schedule Updated',
+        message: '${old.customerName} modified appointment schedule to ${newTimeSlot ?? old.timeSlot}.',
+        type: 'schedule_updated',
+        bookingId: old.id,
+      );
+
+      notifyListeners();
+    }
+  }
+
+  // CREATE/UPDATE: Add custom scope amendment to contract (Member 2 - Digital Contract)
+  void addCustomScopeTerm(String bookingId, String term) {
+    final index = _bookings.indexWhere((b) => b.id == bookingId);
+    if (index != -1) {
+      final old = _bookings[index];
+      final updatedTerms = List<String>.from(old.customTerms)..add(term);
+      _bookings[index] = Booking(
+        id: old.id,
+        customerId: old.customerId,
+        customerName: old.customerName,
+        customerPhone: old.customerPhone,
+        providerId: old.providerId,
+        providerName: old.providerName,
+        serviceCategory: old.serviceCategory,
+        serviceItem: old.serviceItem,
+        bookingDate: old.bookingDate,
+        timeSlot: old.timeSlot,
+        totalPrice: old.totalPrice,
+        depositAmount: old.depositAmount,
+        remainingAmount: old.remainingAmount,
+        status: old.status,
+        address: old.address,
+        notes: old.notes,
+        isContractSigned: old.isContractSigned,
+        signature: old.signature,
+        customTerms: updatedTerms,
+        createdAt: old.createdAt,
+      );
+      notifyListeners();
+    }
+  }
+
+  // DELETE: Cancel booking (Member 2 - Booking Confirmation)
   void cancelBooking(String bookingId) {
     final index = _bookings.indexWhere((b) => b.id == bookingId);
     if (index != -1) {
-      updateBookingStatus(bookingId, 'cancelled');
+      final old = _bookings[index];
+      _bookings[index] = Booking(
+        id: old.id,
+        customerId: old.customerId,
+        customerName: old.customerName,
+        customerPhone: old.customerPhone,
+        providerId: old.providerId,
+        providerName: old.providerName,
+        serviceCategory: old.serviceCategory,
+        serviceItem: old.serviceItem,
+        bookingDate: old.bookingDate,
+        timeSlot: old.timeSlot,
+        totalPrice: old.totalPrice,
+        depositAmount: old.depositAmount,
+        remainingAmount: old.remainingAmount,
+        status: 'cancelled',
+        address: old.address,
+        notes: old.notes,
+        isContractSigned: old.isContractSigned,
+        signature: old.signature,
+        customTerms: old.customTerms,
+        createdAt: old.createdAt,
+      );
+
+      createNotification(
+        recipientId: old.providerId,
+        title: 'Booking Cancelled',
+        message: '${old.customerName} cancelled booking ${old.id}.',
+        type: 'booking_cancelled',
+        bookingId: old.id,
+      );
+
+      notifyListeners();
     }
+  }
+
+  // CHAT MESSAGES CRUD (Member 2 - In-App Provider Chat)
+  final List<ChatMessage> _chatMessages = [
+    ChatMessage(
+      id: 'MSG-1',
+      bookingId: 'BK-1001',
+      providerId: 'prov_kamal',
+      senderId: 'provider',
+      senderName: 'Kamal Perera',
+      text: 'Hello! I noticed your plumbing booking. Could you confirm if you have a shutoff valve accessible?',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 45)),
+    ),
+    ChatMessage(
+      id: 'MSG-2',
+      bookingId: 'BK-1001',
+      providerId: 'prov_kamal',
+      senderId: 'customer',
+      senderName: 'Poornima Madubashini',
+      text: 'Yes, the main valve is right under the kitchen sink. Parking is free in our driveway.',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
+    ),
+    ChatMessage(
+      id: 'MSG-3',
+      bookingId: 'BK-1001',
+      providerId: 'prov_kamal',
+      senderId: 'provider',
+      senderName: 'Kamal Perera',
+      text: 'Great! I will bring replacement washers and sealant. See you tomorrow at 10:00 AM.',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
+    ),
+  ];
+  List<ChatMessage> get chatMessages => _chatMessages;
+
+  List<ChatMessage> getMessagesForBooking(String bookingId) {
+    return _chatMessages.where((m) => m.bookingId == bookingId).toList();
+  }
+
+  void sendChatMessage({
+    required String bookingId,
+    required String providerId,
+    required String senderId,
+    required String senderName,
+    required String text,
+  }) {
+    _chatMessages.add(
+      ChatMessage(
+        id: 'MSG-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
+        bookingId: bookingId,
+        providerId: providerId,
+        senderId: senderId,
+        senderName: senderName,
+        text: text,
+        timestamp: DateTime.now(),
+      ),
+    );
+    notifyListeners();
+  }
+
+  void deleteChatMessage(String messageId) {
+    _chatMessages.removeWhere((m) => m.id == messageId);
+    notifyListeners();
   }
 
   // --- MEMBER 3: Secure Payment, Receipts & Completed Job Reviews CRUD ---
@@ -217,6 +423,26 @@ class AppStateService extends ChangeNotifier {
     _reviews.insert(0, newReview);
     updateBookingStatus(bookingId, 'completed');
     notifyListeners();
+  }
+
+  // UPDATE (FR005): Vote helpful on a review
+  void voteHelpfulReview(String reviewId) {
+    final index = _reviews.indexWhere((r) => r.id == reviewId);
+    if (index != -1) {
+      final old = _reviews[index];
+      _reviews[index] = Review(
+        id: old.id,
+        bookingId: old.bookingId,
+        providerId: old.providerId,
+        customerName: old.customerName,
+        rating: old.rating,
+        comment: old.comment,
+        tags: old.tags,
+        helpfulVotes: old.helpfulVotes + 1,
+        createdAt: old.createdAt,
+      );
+      notifyListeners();
+    }
   }
 
   // --- MEMBER 4: Notifications, Job Details & History CRUD ---
