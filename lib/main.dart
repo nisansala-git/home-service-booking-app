@@ -35,35 +35,39 @@ class FixItHomeApp extends StatelessWidget {
                   ? constraints.maxHeight - 24
                   : 844.0;
 
-              return ColoredBox(
-                color: const Color(0xFF0F172A),
-                child: Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(36),
-                    child: Container(
+              return SizedBox.expand(
+                child: ColoredBox(
+                  color: const Color(0xFF0F172A),
+                  child: Center(
+                    child: SizedBox(
                       width: 390,
                       height: targetHeight,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
+                      child: ClipRRect(
                         borderRadius: BorderRadius.circular(36),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.45),
-                            blurRadius: 36,
-                            spreadRadius: 4,
-                            offset: const Offset(0, 10),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(36),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.45),
+                                blurRadius: 36,
+                                spreadRadius: 4,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                            border: Border.all(
+                              color: const Color(0xFF334155),
+                              width: 4,
+                            ),
                           ),
-                        ],
-                        border: Border.all(
-                          color: const Color(0xFF334155),
-                          width: 4,
+                          child: MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                              size: Size(390, targetHeight),
+                            ),
+                            child: child ?? const SizedBox.shrink(),
+                          ),
                         ),
-                      ),
-                      child: MediaQuery(
-                        data: MediaQuery.of(context).copyWith(
-                          size: Size(390, targetHeight),
-                        ),
-                        child: child ?? const SizedBox.shrink(),
                       ),
                     ),
                   ),
