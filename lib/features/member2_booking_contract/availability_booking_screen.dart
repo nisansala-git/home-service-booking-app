@@ -57,7 +57,11 @@ class _AvailabilityBookingScreenState extends State<AvailabilityBookingScreen> {
     _selectedDate = DateTime.now().add(const Duration(days: 1));
     _selectedSlot = '10:00 AM - 11:30 AM';
     _selectedService = widget.initialService ?? widget.provider.pricingTable.first;
-    _lockCurrentSlot();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _lockCurrentSlot();
+      }
+    });
     _startHoldTimer();
   }
 

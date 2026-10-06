@@ -328,7 +328,10 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                       Align(
                         alignment: Alignment.centerLeft,
                         child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(visualDensity: VisualDensity.compact),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 36),
+                            visualDensity: VisualDensity.compact,
+                          ),
                           onPressed: _showAddAmendmentModal,
                           icon: const Icon(Icons.add, size: 14),
                           label: const Text('+ Add Custom Amendment / Warranty', style: TextStyle(fontSize: 11)),

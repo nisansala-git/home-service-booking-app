@@ -136,7 +136,10 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Keep Booking')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              minimumSize: const Size(90, 36),
+            ),
             onPressed: () {
               // CRUD: DELETE / Cancel Booking
               _appState.cancelBooking(activeBooking.id);
@@ -251,6 +254,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                     Expanded(
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 40),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           side: const BorderSide(color: AppColors.primary),
                         ),
@@ -273,6 +277,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                     Expanded(
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 40),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           side: const BorderSide(color: AppColors.cardBorder),
                         ),

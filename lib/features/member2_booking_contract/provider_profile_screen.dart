@@ -152,15 +152,17 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                 expandedHeight: 220,
                 pinned: true,
                 automaticallyImplyLeading: false,
-                leading: Navigator.canPop(context)
-                    ? IconButton(
-                        icon: const CircleAvatar(
-                          backgroundColor: Colors.black45,
-                          child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 16),
-                        ),
-                        onPressed: () => Navigator.of(context).maybePop(),
-                      )
-                    : null,
+                leading: IconButton(
+                  icon: const CircleAvatar(
+                    backgroundColor: Colors.black45,
+                    child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 16),
+                  ),
+                  onPressed: () {
+                    if (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
                 actions: [
                   // CRUD: Bookmark / Favorite Toggle
                   IconButton(
@@ -607,6 +609,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                   // Message Provider Button (Variant B) — intrinsic width
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 44),
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                       side: const BorderSide(color: AppColors.primary),
                     ),
