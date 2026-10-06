@@ -271,4 +271,46 @@ class AppStateService extends ChangeNotifier {
     _notifications.removeWhere((n) => n.id == notifId);
     notifyListeners();
   }
+
+  void markAllNotificationsAsRead(String recipientId) {
+    bool changed = false;
+    for (int i = 0; i < _notifications.length; i++) {
+      if (_notifications[i].recipientId == recipientId && !_notifications[i].isRead) {
+        final old = _notifications[i];
+        _notifications[i] = AppNotification(
+          id: old.id,
+          recipientId: old.recipientId,
+          title: old.title,
+          message: old.message,
+          type: old.type,
+          bookingId: old.bookingId,
+          timestamp: old.timestamp,
+          isRead: true,
+        );
+        changed = true;
+      }
+    }
+    if (changed) {
+      notifyListeners();
+    }
+  }
+
+  void clearAllNotifications(String recipientId) {
+    _notifications.removeWhere((n) => n.recipientId == recipientId);
+    notifyListeners();
+  }
+
+  void simulateIncomingJobAlert({
+    required String providerId,
+    required String customerName,
+    required String serviceItem,
+  }) {
+    createNotification(
+      recipientId: providerId,
+      title: 'New Urgent Booking from $customerName',
+      message: '$customerName booked $serviceItem. Tap to review details.',
+      type: 'new_request',
+      bookingId: 'BK-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
+    );
+  }
 }
