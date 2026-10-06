@@ -151,6 +151,16 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
               SliverAppBar(
                 expandedHeight: 220,
                 pinned: true,
+                automaticallyImplyLeading: false,
+                leading: Navigator.canPop(context)
+                    ? IconButton(
+                        icon: const CircleAvatar(
+                          backgroundColor: Colors.black45,
+                          child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 16),
+                        ),
+                        onPressed: () => Navigator.of(context).maybePop(),
+                      )
+                    : null,
                 actions: [
                   // CRUD: Bookmark / Favorite Toggle
                   IconButton(

@@ -110,6 +110,10 @@ class _ProviderChatScreenState extends State<ProviderChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: AppColors.textPrimary),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
         titleSpacing: 0,
         title: Row(
           children: [
