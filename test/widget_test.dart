@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:home_service_booking_app/main.dart';
-import 'package:home_service_booking_app/models/models.dart';
 import 'package:home_service_booking_app/features/member2_booking_contract/provider_profile_screen.dart';
 import 'package:home_service_booking_app/features/member2_booking_contract/availability_booking_screen.dart';
 import 'package:home_service_booking_app/features/member2_booking_contract/provider_chat_screen.dart';

@@ -212,6 +212,11 @@ class AppStateService extends ChangeNotifier {
     notifyListeners();
   }
 
+  void unlockSlot(String slotKey) {
+    _lockedSlots.remove(slotKey);
+    notifyListeners();
+  }
+
   // UPDATE: Reschedule or modify booking details (Member 2 - Booking Confirmation)
   void updateBookingDetails({
     required String bookingId,
