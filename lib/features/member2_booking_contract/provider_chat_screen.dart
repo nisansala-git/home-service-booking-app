@@ -182,7 +182,7 @@ class _ProviderChatScreenState extends State<ProviderChatScreen> {
             tooltip: 'Call Provider',
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Calling ${widget.provider.name} (Direct Line)...')),
+                SnackBar(content: Text('Calling ${widget.provider.name} (${widget.provider.phone})...')),
               );
             },
           ),

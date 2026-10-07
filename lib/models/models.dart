@@ -4,6 +4,7 @@ class ServiceProvider {
   final String id;
   final String name;
   final String category;
+  final String phone;
   final double rating;
   final int reviewCount;
   final int jobsCompleted;
@@ -23,6 +24,7 @@ class ServiceProvider {
     required this.id,
     required this.name,
     required this.category,
+    this.phone = '077 123 4567',
     required this.rating,
     required this.reviewCount,
     required this.jobsCompleted,
@@ -44,6 +46,7 @@ class ServiceProvider {
       'id': id,
       'name': name,
       'category': category,
+      'phone': phone,
       'rating': rating,
       'reviewCount': reviewCount,
       'jobsCompleted': jobsCompleted,
@@ -66,6 +69,7 @@ class ServiceProvider {
       id: docId,
       name: map['name'] ?? '',
       category: map['category'] ?? '',
+      phone: map['phone'] ?? '077 123 4567',
       rating: (map['rating'] ?? 5.0).toDouble(),
       reviewCount: map['reviewCount'] ?? 0,
       jobsCompleted: map['jobsCompleted'] ?? 0,

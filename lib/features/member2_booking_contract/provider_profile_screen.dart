@@ -628,6 +628,9 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                   // Check Availability CTA — takes remaining space
                   Expanded(
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                      ),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -636,7 +639,13 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                           ),
                         );
                       },
-                      child: const Text('Check Availability'),
+                      child: const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'Check Availability',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                      ),
                     ),
                   ),
                 ],
