@@ -12,11 +12,15 @@ import 'features/member4_notifications_history/job_history_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  // Load all data from Firestore (seeds mock data on first run)
-  await AppStateService().initFromFirestore();
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    // Load data from Firestore in background (app renders immediately with mock data)
+    AppStateService().initFromFirestore();
+  } catch (e) {
+    debugPrint('[Firebase] Init error (falling back to mock state): $e');
+  }
   runApp(const FixItHomeApp());
 }
 
