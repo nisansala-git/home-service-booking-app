@@ -28,16 +28,13 @@ class DigitalContractDepositScreen extends StatefulWidget {
 class _DigitalContractDepositScreenState extends State<DigitalContractDepositScreen> {
   bool _agreedToTerms = false;
   bool _hasSigned = false;
-  int _signatureMode = 0; // 0: Draw, 1: Type Name
   final List<Offset?> _points = [];
   final AppStateService _appState = AppStateService();
   final TextEditingController _amendmentController = TextEditingController();
-  final TextEditingController _typedSignatureController = TextEditingController(text: 'Customer Verified');
 
   @override
   void dispose() {
     _amendmentController.dispose();
-    _typedSignatureController.dispose();
     super.dispose();
   }
 
@@ -162,23 +159,16 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
       );
       return;
     }
-    
-    final bool validSignature = _signatureMode == 0 
-        ? _hasSigned 
-        : _typedSignatureController.text.trim().isNotEmpty;
 
-    if (!validSignature) {
+    if (!_hasSigned) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please provide your digital signature before continuing.')),
+        const SnackBar(content: Text('Please draw your digital signature or tap Auto-Sign.')),
       );
       return;
     }
 
     // CRUD: UPDATE sign digital contract and lock deposit in state
-    final sigHash = _signatureMode == 0 
-        ? 'SHA256-CANVAS-SIG-VALIDATED' 
-        : 'SHA256-TYPED-${_typedSignatureController.text.trim().toUpperCase()}';
-    _appState.signContractAndPayDeposit(activeBooking.id, sigHash);
+    _appState.signContractAndPayDeposit(activeBooking.id, 'SHA256-CANVAS-SIG-VALIDATED');
 
     Navigator.push(
       context,
@@ -383,242 +373,102 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                     const Text('Digital Signature', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     Row(
                       children: [
-                        if (_signatureMode == 0) ...[
+                        TextButton.icon(
+                          style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
+                          icon: const Icon(Icons.auto_fix_high, size: 13, color: AppColors.primary),
+                          label: const Text('Auto-Sign', style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.bold)),
+                          onPressed: _autoSign,
+                        ),
+                        if (_hasSigned)
                           TextButton.icon(
                             style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
-                            icon: const Icon(Icons.auto_fix_high, size: 13, color: AppColors.primary),
-                            label: const Text('Auto-Sign', style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.bold)),
-                            onPressed: _autoSign,
+                            icon: const Icon(Icons.clear, size: 13, color: AppColors.error),
+                            label: const Text('Clear', style: TextStyle(fontSize: 11, color: AppColors.error)),
+                            onPressed: () {
+                              // CRUD: DELETE / Reset signature
+                              setState(() {
+                                _points.clear();
+                                _hasSigned = false;
+                              });
+                            },
                           ),
-                          if (_hasSigned)
-                            TextButton.icon(
-                              style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
-                              icon: const Icon(Icons.clear, size: 13, color: AppColors.error),
-                              label: const Text('Clear', style: TextStyle(fontSize: 11, color: AppColors.error)),
-                              onPressed: () {
-                                // CRUD: DELETE / Reset signature
-                                setState(() {
-                                  _points.clear();
-                                  _hasSigned = false;
-                                });
-                              },
-                            ),
-                        ],
                       ],
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
 
-                // Mode Selector Tabs (Draw vs Type)
+                // Clean Drawing Canvas
                 Container(
-                  padding: const EdgeInsets.all(3),
+                  height: 130,
+                  width: double.infinity,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: _hasSigned ? AppColors.primary : AppColors.cardBorder,
+                      width: _hasSigned ? 1.5 : 1,
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => setState(() => _signatureMode = 0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            decoration: BoxDecoration(
-                              color: _signatureMode == 0 ? Colors.white : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: _signatureMode == 0
-                                  ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4)]
-                                  : null,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.draw, size: 14, color: _signatureMode == 0 ? AppColors.primary : AppColors.textSecondary),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Draw Signature',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: _signatureMode == 0 ? FontWeight.bold : FontWeight.normal,
-                                    color: _signatureMode == 0 ? AppColors.textPrimary : AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Stack(
+                      children: [
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onPanStart: (DragStartDetails details) {
                             setState(() {
-                              _signatureMode = 1;
-                              if (_typedSignatureController.text.trim().isEmpty) {
-                                _typedSignatureController.text = 'Customer Signature';
-                              }
+                              _points.add(details.localPosition);
+                              _hasSigned = true;
                             });
                           },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            decoration: BoxDecoration(
-                              color: _signatureMode == 1 ? Colors.white : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: _signatureMode == 1
-                                  ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4)]
-                                  : null,
-                            ),
+                          onPanUpdate: (DragUpdateDetails details) {
+                            setState(() {
+                              _points.add(details.localPosition);
+                              _hasSigned = true;
+                            });
+                          },
+                          onPanEnd: (DragEndDetails details) {
+                            setState(() {
+                              _points.add(null);
+                            });
+                          },
+                          child: CustomPaint(
+                            painter: SignaturePainter(points: _points),
+                            size: Size.infinite,
+                          ),
+                        ),
+                        if (!_hasSigned)
+                          const Center(
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.text_fields, size: 14, color: _signatureMode == 1 ? AppColors.primary : AppColors.textSecondary),
-                                const SizedBox(width: 6),
+                                Icon(Icons.draw_outlined, size: 18, color: Colors.grey),
+                                SizedBox(width: 8),
                                 Text(
-                                  'Type Name',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: _signatureMode == 1 ? FontWeight.bold : FontWeight.normal,
-                                    color: _signatureMode == 1 ? AppColors.textPrimary : AppColors.textSecondary,
-                                  ),
+                                  'Draw your signature here with finger/mouse',
+                                  style: TextStyle(color: Colors.grey, fontSize: 12),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      ),
-                    ],
+                        if (_hasSigned)
+                          Positioned(
+                            bottom: 6,
+                            right: 10,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text('ID: SHA256-DIGITAL-STAMP', style: TextStyle(fontSize: 9, color: Colors.grey)),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: 10),
-
-                // Signature Container (Draw or Type)
-                if (_signatureMode == 0)
-                  // DRAW CANVAS
-                  Container(
-                    height: 130,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: _hasSigned ? AppColors.primary : AppColors.cardBorder,
-                        width: _hasSigned ? 1.5 : 1,
-                      ),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
-                      child: Stack(
-                        children: [
-                          GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onPanStart: (DragStartDetails details) {
-                              setState(() {
-                                _points.add(details.localPosition);
-                                _hasSigned = true;
-                              });
-                            },
-                            onPanUpdate: (DragUpdateDetails details) {
-                              setState(() {
-                                _points.add(details.localPosition);
-                                _hasSigned = true;
-                              });
-                            },
-                            onPanEnd: (DragEndDetails details) {
-                              setState(() {
-                                _points.add(null);
-                              });
-                            },
-                            child: CustomPaint(
-                              painter: SignaturePainter(points: _points),
-                              size: Size.infinite,
-                            ),
-                          ),
-                          if (!_hasSigned)
-                            const Center(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.draw_outlined, size: 18, color: Colors.grey),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Draw your signature here with finger/mouse',
-                                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          if (_hasSigned)
-                            Positioned(
-                              bottom: 6,
-                              right: 10,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF1F5F9),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: const Text('ID: SHA256-DIGITAL-STAMP', style: TextStyle(fontSize: 9, color: Colors.grey)),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  )
-                else
-                  // TYPE NAME SIGNATURE
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: _typedSignatureController,
-                        onChanged: (_) => setState(() {}),
-                        decoration: InputDecoration(
-                          hintText: 'Enter your full legal name',
-                          labelText: 'Legal Name for Digital Signature',
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.primary, width: 1.5),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('Digital Signature Preview:', style: TextStyle(fontSize: 10, color: AppColors.textSecondary)),
-                            const SizedBox(height: 6),
-                            Text(
-                              _typedSignatureController.text.trim().isEmpty ? 'Customer Signature' : _typedSignatureController.text.trim(),
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontFamily: 'Georgia',
-                                fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF0F172A),
-                              ),
-                            ),
-                            const Divider(height: 14),
-                            const Row(
-                              children: [
-                                Icon(Icons.verified, size: 12, color: Color(0xFF15803D)),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Digitally Authenticated Cryptographic Signature Stamp',
-                                  style: TextStyle(fontSize: 9, color: Color(0xFF15803D), fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
 
                 const SizedBox(height: 14),
 
