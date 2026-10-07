@@ -159,6 +159,205 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
   }
 
+  void _showQrVerificationModal(BuildContext context, Booking activeBooking, ServiceProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDCFCE7),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.verified, size: 14, color: Color(0xFF15803D)),
+                      SizedBox(width: 4),
+                      Text(
+                        'VERIFIED DIGITAL PASS',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF15803D),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close, size: 20),
+                  onPressed: () => Navigator.pop(ctx),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Doorstep Verification Pass',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Show this QR code to ${activeBooking.providerName} upon arrival to authenticate and start service.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.4),
+            ),
+            const SizedBox(height: 20),
+
+            // Large QR Display Box
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.cardBorder),
+                    ),
+                    child: const Icon(
+                      Icons.qr_code_2,
+                      size: 150,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        activeBooking.id,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                          letterSpacing: 2,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    '🔒 Encrypted Security Token Active',
+                    style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Details Summary
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                children: [
+                  _buildPassRow('Service', activeBooking.serviceItem),
+                  _buildPassRow('Provider', activeBooking.providerName),
+                  _buildPassRow('Time Slot', activeBooking.timeSlot),
+                  _buildPassRow('Location', activeBooking.address),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Simulate Provider Scan action for full demo functionality
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                minimumSize: const Size(double.infinity, 46),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: const Color(0xFF15803D),
+                    duration: const Duration(seconds: 3),
+                    content: Row(
+                      children: [
+                        const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            '✅ Verification Successful! Provider ${activeBooking.providerName} verified and checked-in on-site.',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.document_scanner_outlined, size: 18),
+              label: const Text('Simulate Provider Check-in Scan'),
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget _buildPassRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -379,30 +578,52 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                         ],
                       ),
 
-                      // Simulated Barcode / QR Section
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Digital Verification Pass', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                                Text(activeBooking.id, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit_calendar_outlined, size: 20, color: AppColors.primary),
-                                  tooltip: 'Reschedule',
-                                  onPressed: () => _showRescheduleModal(context, activeBooking),
-                                ),
-                                const Icon(Icons.qr_code_2, size: 36, color: AppColors.textPrimary),
-                              ],
-                            ),
-                          ],
+                      // Simulated Barcode / QR Section with interactive modal tap
+                      InkWell(
+                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
+                        onTap: () => _showQrVerificationModal(context, activeBooking, provider),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Text('Digital Verification Pass', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                                      const SizedBox(width: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFDCFCE7),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: const Text('TAP TO ENLARGE', style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Color(0xFF15803D))),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(activeBooking.id, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit_calendar_outlined, size: 20, color: AppColors.primary),
+                                    tooltip: 'Reschedule',
+                                    onPressed: () => _showRescheduleModal(context, activeBooking),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.qr_code_2, size: 36, color: AppColors.textPrimary),
+                                    tooltip: 'View QR Pass',
+                                    onPressed: () => _showQrVerificationModal(context, activeBooking, provider),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
