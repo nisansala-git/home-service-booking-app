@@ -65,12 +65,20 @@ class _AvailabilityBookingScreenState extends State<AvailabilityBookingScreen> {
     _startHoldTimer();
   }
 
-  void _startHoldTimer() {
+  void _startHoldTimer({int duration = 600}) {
     _countdownTimer?.cancel();
-    _secondsRemaining = 600;
+    _secondsRemaining = duration;
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       if (_secondsRemaining > 0) {
         setState(() => _secondsRemaining--);
+        if (_secondsRemaining == 0) {
+          timer.cancel();
+          _onHoldExpired();
+        }
       } else {
         timer.cancel();
       }
@@ -82,9 +90,74 @@ class _AvailabilityBookingScreenState extends State<AvailabilityBookingScreen> {
     _appState.lockSlot(slotKey);
   }
 
+  void _unlockCurrentSlot() {
+    final slotKey = '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}_$_selectedSlot';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _appState.unlockSlot(slotKey);
+    });
+  }
+
+  void _onHoldExpired() {
+    _unlockCurrentSlot();
+    _showHoldExpiredDialog();
+  }
+
+  void _extendHold([int extraSeconds = 300]) {
+    _lockCurrentSlot();
+    _startHoldTimer(duration: extraSeconds);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppColors.primary,
+        content: Text('Hold extended by ${extraSeconds ~/ 60} minutes! Slot re-reserved.'),
+      ),
+    );
+  }
+
+  void _showHoldExpiredDialog() {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.timer_off_outlined, color: AppColors.error, size: 24),
+            SizedBox(width: 8),
+            Text('Reservation Hold Expired', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          ],
+        ),
+        content: const Text(
+          'Your 10-minute temporary reservation on this appointment slot has expired to prevent double-booking.\n\nWould you like to extend your hold for another 5 minutes, or choose a different time slot?',
+          style: TextStyle(fontSize: 13, height: 1.4, color: AppColors.textPrimary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+            },
+            child: const Text('Pick Another Slot'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              minimumSize: const Size(130, 38),
+            ),
+            onPressed: () {
+              Navigator.pop(ctx);
+              _extendHold(300); // +5 minutes
+            },
+            child: const Text('Extend Hold (+5m)'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _countdownTimer?.cancel();
+    _unlockCurrentSlot();
     _addressController.dispose();
     _notesController.dispose();
     super.dispose();
@@ -93,9 +166,9 @@ class _AvailabilityBookingScreenState extends State<AvailabilityBookingScreen> {
   void _onSlotSelected(String slot) {
     setState(() {
       _selectedSlot = slot;
-      _secondsRemaining = 600; // reset 10m lock
     });
     _lockCurrentSlot();
+    _startHoldTimer(duration: 600); // reset 10m lock
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 1),
@@ -105,6 +178,11 @@ class _AvailabilityBookingScreenState extends State<AvailabilityBookingScreen> {
   }
 
   void _confirmBooking() {
+    if (_secondsRemaining <= 0) {
+      _showHoldExpiredDialog();
+      return;
+    }
+
     if (_addressController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter service address.')),
@@ -199,39 +277,103 @@ class _AvailabilityBookingScreenState extends State<AvailabilityBookingScreen> {
 
             const SizedBox(height: 14),
 
-            // NFR007: Slot Conflict Lock Countdown Banner
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEFF6FF), // Soft blue security banner
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFBFDBFE)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.lock_clock, size: 20, color: Color(0xFF1D4ED8)),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Slot Reserved Against Double-Booking (NFR007)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
+            // NFR007: Slot Conflict Lock Countdown Banner with 2-Minute Red Warning & Expiration
+            Builder(
+              builder: (context) {
+                final bool isExpired = _secondsRemaining <= 0;
+                final bool isWarning = _secondsRemaining <= 120 && !isExpired; // 2 minutes or less
+
+                final Color bgColor = isExpired || isWarning
+                    ? const Color(0xFFFEF2F2) // Light red alert background
+                    : const Color(0xFFEFF6FF); // Soft blue security banner
+
+                final Color borderColor = isExpired || isWarning
+                    ? const Color(0xFFFCA5A5) // Red border
+                    : const Color(0xFFBFDBFE); // Soft blue border
+
+                final Color iconColor = isExpired || isWarning
+                    ? const Color(0xFFDC2626) // Vivid red
+                    : const Color(0xFF1D4ED8); // Deep blue
+
+                final Color titleColor = isExpired || isWarning
+                    ? const Color(0xFF991B1B) // Dark red title
+                    : const Color(0xFF1E3A8A);
+
+                final Color subtitleColor = isExpired || isWarning
+                    ? const Color(0xFFB91C1C) // Medium red subtitle
+                    : const Color(0xFF1E40AF);
+
+                final IconData icon = isExpired
+                    ? Icons.timer_off_outlined
+                    : (isWarning ? Icons.alarm : Icons.lock_clock);
+
+                final String titleText = isExpired
+                    ? 'Hold Expired — Slot Released (NFR007)'
+                    : (isWarning
+                        ? '⚠️ Holding Slot — Expiring Soon! (NFR007)'
+                        : 'Slot Reserved Against Double-Booking (NFR007)');
+
+                final String subtitleText = isExpired
+                    ? '10-minute hold expired. Extend to re-lock slot.'
+                    : (isWarning
+                        ? 'Hold expires in ${_formatTimer(_secondsRemaining)}! Complete booking now.'
+                        : 'Holding this slot for ${_formatTimer(_secondsRemaining)} to complete booking.');
+
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: borderColor, width: isWarning || isExpired ? 1.5 : 1),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(icon, size: 22, color: iconColor),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              titleText,
+                              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: titleColor),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              subtitleText,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: subtitleColor,
+                                fontWeight: isWarning ? FontWeight.w600 : FontWeight.normal,
+                              ),
+                            ),
+                          ],
                         ),
+                      ),
+                      if (isExpired)
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            minimumSize: const Size(0, 32),
+                            backgroundColor: AppColors.error,
+                            elevation: 0,
+                          ),
+                          onPressed: () => _extendHold(300),
+                          child: const Text('Extend (+5m)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white)),
+                        )
+                      else
                         Text(
-                          'Holding this slot for ${_formatTimer(_secondsRemaining)} to complete booking.',
-                          style: const TextStyle(fontSize: 11, color: Color(0xFF1E40AF)),
+                          _formatTimer(_secondsRemaining),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: isWarning ? const Color(0xFFDC2626) : const Color(0xFF1D4ED8),
+                          ),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
-                  Text(
-                    _formatTimer(_secondsRemaining),
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1D4ED8)),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
 
             const SizedBox(height: 20),
