@@ -576,7 +576,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
           ),
 
           // Sticky Bottom Footer: Direct "Message" Button + "Check Availability" (Variant B + A Hybrid)
-          bottomSheet: Container(
+          bottomNavigationBar: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: AppColors.surface,
