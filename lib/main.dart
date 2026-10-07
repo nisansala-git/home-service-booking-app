@@ -8,6 +8,7 @@ import 'features/member1_discovery_auth/search_results_screen.dart';
 import 'features/member3_payment_reviews/provider_dashboard_screen.dart';
 import 'features/member4_notifications_history/my_bookings_screen.dart';
 import 'features/member4_notifications_history/provider_notifications_screen.dart';
+import 'features/member4_notifications_history/job_history_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -99,7 +100,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
             ? [
                 const ProviderDashboardScreen(),
                 const ProviderNotificationsScreen(),
-                const MyBookingsScreen(),
+                const JobHistoryScreen(),
               ]
             : [
                 const HomeDiscoveryScreen(),
