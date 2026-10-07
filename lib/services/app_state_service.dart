@@ -1,12 +1,58 @@
 import 'package:flutter/foundation.dart';
 import '../models/models.dart';
 import 'mock_data.dart';
+import 'firestore_service.dart';
 
 /// Central state manager handling CRUD operations for all 4 member modules
 class AppStateService extends ChangeNotifier {
   static final AppStateService _instance = AppStateService._internal();
   factory AppStateService() => _instance;
   AppStateService._internal();
+
+  final FirestoreService _fs = FirestoreService();
+
+  // Whether initial Firestore load is in progress
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
+
+  // True only after initFromFirestore() succeeds — prevents Firestore calls in test mode
+  bool _firestoreReady = false;
+
+  /// Fire-and-forget helper that silently swallows Firestore errors
+  void _persist(Future<void> Function() action) {
+    if (!_firestoreReady) return;
+    action().catchError((e) {
+      debugPrint('[AppStateService] Firestore write error (non-fatal): $e');
+    });
+  }
+
+  /// Call once from main() after Firebase.initializeApp().
+  /// Seeds Firestore with mock data on first run, then loads everything.
+  Future<void> initFromFirestore() async {
+    try {
+      await _fs.seedIfEmpty();
+      final results = await Future.wait([
+        _fs.loadProviders(),
+        _fs.loadBookings(),
+        _fs.loadReviews(),
+        _fs.loadNotifications(),
+        _fs.loadChatMessages(),
+      ]);
+      _providers = results[0] as List<ServiceProvider>;
+      _bookings  = results[1] as List<Booking>;
+      _reviews   = results[2] as List<Review>;
+      _notifications = results[3] as List<AppNotification>;
+      _chatMessages.clear();
+      _chatMessages.addAll(results[4] as List<ChatMessage>);
+      _firestoreReady = true;
+    } catch (e) {
+      // Firestore unavailable — keep in-memory mock data as fallback
+      debugPrint('[AppStateService] Firestore load failed, using mock data: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   // Active user role switcher (for viva and evaluation: Homeowner vs Provider)
   String _activeRole = 'homeowner'; // 'homeowner' | 'provider'
@@ -36,6 +82,7 @@ class AppStateService extends ChangeNotifier {
   // CREATE (FR001, FR002): Register new provider
   void registerProvider(ServiceProvider newProvider) {
     _providers.insert(0, newProvider);
+_persist(() => _fs.saveProvider(newProvider)); // persist
     notifyListeners();
   }
 
@@ -44,6 +91,7 @@ class AppStateService extends ChangeNotifier {
     final index = _providers.indexWhere((p) => p.id == updatedProvider.id);
     if (index != -1) {
       _providers[index] = updatedProvider;
+_persist(() => _fs.updateProvider(updatedProvider)); // persist
       notifyListeners();
     }
   }
@@ -51,6 +99,7 @@ class AppStateService extends ChangeNotifier {
   // DELETE: Deactivate provider
   void removeProvider(String providerId) {
     _providers.removeWhere((p) => p.id == providerId);
+_persist(() => _fs.deleteProvider(providerId)); // persist
     notifyListeners();
   }
 
@@ -105,6 +154,7 @@ class AppStateService extends ChangeNotifier {
       bookingId: newBooking.id,
     );
 
+_persist(() => _fs.saveBooking(newBooking)); // persist
     notifyListeners();
     return newBooking;
   }
@@ -144,6 +194,7 @@ class AppStateService extends ChangeNotifier {
         bookingId: old.id,
       );
 
+      _persist(() => _fs.updateBooking(_bookings[index])); // persist
       notifyListeners();
     }
   }
@@ -174,6 +225,7 @@ class AppStateService extends ChangeNotifier {
         signature: old.signature,
         createdAt: old.createdAt,
       );
+      _persist(() => _fs.updateBooking(_bookings[index])); // persist
       notifyListeners();
     }
   }
@@ -259,6 +311,7 @@ class AppStateService extends ChangeNotifier {
         bookingId: old.id,
       );
 
+      _persist(() => _fs.updateBooking(_bookings[index])); // persist
       notifyListeners();
     }
   }
@@ -291,6 +344,7 @@ class AppStateService extends ChangeNotifier {
         customTerms: updatedTerms,
         createdAt: old.createdAt,
       );
+      _persist(() => _fs.updateBooking(_bookings[index])); // persist
       notifyListeners();
     }
   }
@@ -331,6 +385,7 @@ class AppStateService extends ChangeNotifier {
         bookingId: old.id,
       );
 
+      _persist(() => _fs.updateBooking(_bookings[index])); // persist
       notifyListeners();
     }
   }
@@ -389,11 +444,13 @@ class AppStateService extends ChangeNotifier {
         timestamp: DateTime.now(),
       ),
     );
+_persist(() => _fs.saveChatMessage(_chatMessages.last)); // persist
     notifyListeners();
   }
 
   void deleteChatMessage(String messageId) {
     _chatMessages.removeWhere((m) => m.id == messageId);
+_persist(() => _fs.deleteChatMessage(messageId)); // persist
     notifyListeners();
   }
 
@@ -426,6 +483,7 @@ class AppStateService extends ChangeNotifier {
     );
 
     _reviews.insert(0, newReview);
+_persist(() => _fs.saveReview(newReview)); // persist
     updateBookingStatus(bookingId, 'completed');
     notifyListeners();
   }
@@ -446,6 +504,7 @@ class AppStateService extends ChangeNotifier {
         helpfulVotes: old.helpfulVotes + 1,
         createdAt: old.createdAt,
       );
+      _persist(() => _fs.updateReview(_reviews[index])); // persist
       notifyListeners();
     }
   }
@@ -477,6 +536,7 @@ class AppStateService extends ChangeNotifier {
         timestamp: DateTime.now(),
       ),
     );
+_persist(() => _fs.saveNotification(_notifications.first)); // persist
     notifyListeners();
   }
 
@@ -494,12 +554,14 @@ class AppStateService extends ChangeNotifier {
         timestamp: old.timestamp,
         isRead: true,
       );
+      _persist(() => _fs.updateNotification(_notifications[index])); // persist
       notifyListeners();
     }
   }
 
   void clearNotification(String notifId) {
     _notifications.removeWhere((n) => n.id == notifId);
+_persist(() => _fs.deleteNotification(notifId)); // persist
     notifyListeners();
   }
 
@@ -522,12 +584,23 @@ class AppStateService extends ChangeNotifier {
       }
     }
     if (changed) {
+      // Persist all updated notifications
+      for (final n in _notifications.where((n) => n.recipientId == recipientId)) {
+        _persist(() => _fs.updateNotification(n));
+      }
       notifyListeners();
     }
   }
 
   void clearAllNotifications(String recipientId) {
+    final toDelete = _notifications
+        .where((n) => n.recipientId == recipientId)
+        .map((n) => n.id)
+        .toList();
     _notifications.removeWhere((n) => n.recipientId == recipientId);
+    for (final id in toDelete) {
+      _persist(() => _fs.deleteNotification(id)); // persist
+    }
     notifyListeners();
   }
 

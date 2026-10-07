@@ -15,6 +15,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // Load all data from Firestore (seeds mock data on first run)
+  await AppStateService().initFromFirestore();
   runApp(const FixItHomeApp());
 }
 
