@@ -283,7 +283,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                         ),
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Calling ${activeBooking.providerName}...')),
+                            SnackBar(content: Text('Calling ${activeBooking.providerName} (${provider.phone})...')),
                           );
                         },
                         icon: const Icon(Icons.call_outlined, size: 16, color: AppColors.textPrimary),

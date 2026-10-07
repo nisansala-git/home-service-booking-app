@@ -94,6 +94,7 @@ class _ProviderVerificationScreenState extends State<ProviderVerificationScreen>
       id: 'prov_${DateTime.now().millisecondsSinceEpoch}',
       name: widget.name,
       category: widget.category,
+      phone: widget.phone.trim().isNotEmpty ? widget.phone.trim() : '077 123 4567',
       rating: 5.0,
       reviewCount: 0,
       jobsCompleted: 0,
