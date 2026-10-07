@@ -89,7 +89,10 @@ class _ProviderChatScreenState extends State<ProviderChatScreen> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              minimumSize: const Size(80, 36),
+            ),
             onPressed: () {
               _appState.deleteChatMessage(message.id);
               Navigator.pop(ctx);
@@ -112,7 +115,11 @@ class _ProviderChatScreenState extends State<ProviderChatScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: AppColors.textPrimary),
-          onPressed: () => Navigator.of(context).maybePop(),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
+          },
         ),
         titleSpacing: 0,
         title: Row(
