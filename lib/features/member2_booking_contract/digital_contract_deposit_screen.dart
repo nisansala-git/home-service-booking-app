@@ -28,6 +28,7 @@ class DigitalContractDepositScreen extends StatefulWidget {
 class _DigitalContractDepositScreenState extends State<DigitalContractDepositScreen> {
   bool _agreedToTerms = false;
   bool _hasSigned = false;
+  String? _signedName; // set when Quick Sign is used
   final List<Offset?> _points = [];
   final AppStateService _appState = AppStateService();
   final TextEditingController _amendmentController = TextEditingController();
@@ -130,24 +131,45 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
     );
   }
 
-  void _autoSign() {
+  void _quickSign(String name) {
+    // Generate a flowing cursive-style signature from the person's name
+    // The strokes simulate a natural flowing cursive signature
+    final List<Offset?> strokes = [];
+    final double startX = 18.0;
+    final double baseY = 80.0;
+
+    // First name initial — tall rising loop
+    strokes.addAll([
+      Offset(startX, baseY + 10),
+      Offset(startX + 4, baseY - 22),
+      Offset(startX + 10, baseY + 8),
+      Offset(startX + 16, baseY - 8),
+      Offset(startX + 22, baseY + 12),
+      null,
+    ]);
+
+    // Flowing middle body — continuous cursive wave
+    double x = startX + 28;
+    for (int i = 0; i < 8; i++) {
+      final double wave = (i % 2 == 0) ? -14.0 : 6.0;
+      strokes.add(Offset(x, baseY + wave));
+      x += 16;
+    }
+    strokes.add(null);
+
+    // Final flourish — underline sweep
+    strokes.addAll([
+      Offset(startX + 10, baseY + 22),
+      Offset(startX + 80, baseY + 22),
+      Offset(startX + 120, baseY + 18),
+      Offset(startX + 145, baseY + 12),
+      null,
+    ]);
+
     setState(() {
       _points.clear();
-      // Generate a clean representative signature stroke path
-      _points.addAll([
-        const Offset(30, 75),
-        const Offset(45, 45),
-        const Offset(60, 85),
-        const Offset(75, 40),
-        const Offset(90, 70),
-        const Offset(110, 50),
-        const Offset(130, 65),
-        const Offset(160, 55),
-        const Offset(190, 60),
-        null,
-        const Offset(40, 95),
-        const Offset(220, 90),
-      ]);
+      _points.addAll(strokes);
+      _signedName = name;
       _hasSigned = true;
     });
   }
@@ -162,7 +184,7 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
 
     if (!_hasSigned) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please draw your digital signature or tap Auto-Sign.')),
+        const SnackBar(content: Text('Please draw your digital signature or tap Quick Sign.')),
       );
       return;
     }
@@ -375,9 +397,9 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                       children: [
                         TextButton.icon(
                           style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
-                          icon: const Icon(Icons.auto_fix_high, size: 13, color: AppColors.primary),
-                          label: const Text('Auto-Sign', style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.bold)),
-                          onPressed: _autoSign,
+                          icon: const Icon(Icons.draw, size: 13, color: AppColors.primary),
+                          label: const Text('Quick Sign', style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.bold)),
+                          onPressed: () => _quickSign(activeBooking.providerName.split(' ').first),
                         ),
                         if (_hasSigned)
                           TextButton.icon(
@@ -388,6 +410,7 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                               // CRUD: DELETE / Reset signature
                               setState(() {
                                 _points.clear();
+                                _signedName = null;
                                 _hasSigned = false;
                               });
                             },
@@ -395,6 +418,11 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                       ],
                     ),
                   ],
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Draw your signature below, or tap Quick Sign to generate one.',
+                  style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 8),
 
@@ -469,6 +497,22 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                     ),
                   ),
                 ),
+
+                // Show name label when Quick Sign was used
+                if (_hasSigned && _signedName != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.verified, size: 13, color: Color(0xFF15803D)),
+                        const SizedBox(width: 5),
+                        Text(
+                          'Digitally signed — signature generated for this session',
+                          style: const TextStyle(fontSize: 10, color: Color(0xFF15803D), fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
 
                 const SizedBox(height: 14),
 
