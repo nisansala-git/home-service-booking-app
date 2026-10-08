@@ -11,6 +11,7 @@ class ServiceProvider {
   final int experienceYears;
   final double startingPrice;
   final double distanceKm;
+  final bool isAvailableToday;
   final bool isVerified;
   final bool isBackgroundChecked;
   final bool isInsured;
@@ -30,6 +31,7 @@ class ServiceProvider {
     required this.experienceYears,
     required this.startingPrice,
     required this.distanceKm,
+    this.isAvailableToday = false,
     this.isVerified = true,
     this.isBackgroundChecked = true,
     this.isInsured = true,
@@ -51,6 +53,7 @@ class ServiceProvider {
       'experienceYears': experienceYears,
       'startingPrice': startingPrice,
       'distanceKm': distanceKm,
+      'isAvailableToday': isAvailableToday,
       'isVerified': isVerified,
       'isBackgroundChecked': isBackgroundChecked,
       'isInsured': isInsured,
@@ -73,6 +76,7 @@ class ServiceProvider {
       experienceYears: map['experienceYears'] ?? 1,
       startingPrice: (map['startingPrice'] ?? 1000).toDouble(),
       distanceKm: (map['distanceKm'] ?? 1.5).toDouble(),
+      isAvailableToday: map['isAvailableToday'] ?? false,
       isVerified: map['isVerified'] ?? true,
       isBackgroundChecked: map['isBackgroundChecked'] ?? true,
       isInsured: map['isInsured'] ?? true,
@@ -98,7 +102,8 @@ class Booking {
   final double totalPrice;
   final double depositAmount;
   final double remainingAmount;
-  final String status; // 'confirmed', 'contract_signed', 'deposit_paid', 'in_progress', 'completed', 'cancelled'
+  final String
+      status; // 'confirmed', 'contract_signed', 'deposit_paid', 'in_progress', 'completed', 'cancelled'
   final String address;
   final String notes;
   final bool isContractSigned;
@@ -161,7 +166,8 @@ class Booking {
       providerName: map['providerName'] ?? '',
       serviceCategory: map['serviceCategory'] ?? '',
       serviceItem: map['serviceItem'] ?? '',
-      bookingDate: DateTime.tryParse(map['bookingDate'] ?? '') ?? DateTime.now(),
+      bookingDate:
+          DateTime.tryParse(map['bookingDate'] ?? '') ?? DateTime.now(),
       timeSlot: map['timeSlot'] ?? '',
       totalPrice: (map['totalPrice'] ?? 0).toDouble(),
       depositAmount: (map['depositAmount'] ?? 0).toDouble(),
@@ -229,7 +235,8 @@ class AppNotification {
   final String recipientId;
   final String title;
   final String message;
-  final String type; // 'new_request', 'contract_signed', 'deposit_received', 'job_completed'
+  final String
+      type; // 'new_request', 'contract_signed', 'deposit_received', 'job_completed'
   final String bookingId;
   final DateTime timestamp;
   final bool isRead;

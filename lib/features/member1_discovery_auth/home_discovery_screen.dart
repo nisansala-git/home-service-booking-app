@@ -21,17 +21,45 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
   String _selectedFilterChip = 'All';
 
   @override
+  void initState() {
+    super.initState();
+    _appState.addListener(_refresh);
+  }
+
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
+  @override
   void dispose() {
+    _appState.removeListener(_refresh);
     _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final providers = _appState.providers;
+    final providers = _appState.providers.where((provider) {
+      switch (_selectedFilterChip) {
+        case 'Top Rated':
+          return provider.rating >= 4.8;
+        case 'Nearby':
+          return provider.distanceKm <= 3;
+        case 'Available Today':
+          return provider.isAvailableToday;
+        default:
+          return true;
+      }
+    }).toList();
+    if (_selectedFilterChip == 'Top Rated') {
+      providers.sort((a, b) => b.rating.compareTo(a.rating));
+    } else if (_selectedFilterChip == 'Nearby') {
+      providers.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
+    }
 
     return Scaffold(
       appBar: AppBar(
+        primary: false,
         titleSpacing: 12,
         title: Row(
           children: [
@@ -41,7 +69,8 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.home_repair_service, color: AppColors.textLight, size: 18),
+              child: const Icon(Icons.home_repair_service,
+                  color: AppColors.textLight, size: 18),
             ),
             const SizedBox(width: 8),
             const Expanded(
@@ -49,8 +78,15 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('FixIt Home', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                  Text('Verified Home Services', style: TextStyle(fontSize: 10, color: AppColors.textSecondary), overflow: TextOverflow.ellipsis),
+                  Text('FixIt Home',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary)),
+                  Text('Verified Home Services',
+                      style: TextStyle(
+                          fontSize: 10, color: AppColors.textSecondary),
+                      overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),
@@ -66,13 +102,18 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ProviderRegistrationScreen()),
+                MaterialPageRoute(
+                    builder: (_) => const ProviderRegistrationScreen()),
               );
             },
-            icon: const Icon(Icons.person_add_alt_1, size: 16, color: AppColors.primary),
+            icon: const Icon(Icons.person_add_alt_1,
+                size: 16, color: AppColors.primary),
             label: const Text(
               'Join Pro',
-              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 12),
+              style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12),
             ),
           ),
           const SizedBox(width: 4),
@@ -104,22 +145,26 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => SearchResultsScreen(initialQuery: query.trim()),
+                        builder: (_) =>
+                            SearchResultsScreen(initialQuery: query.trim()),
                       ),
                     );
                   }
                 },
                 decoration: InputDecoration(
                   hintText: 'Search for a service (e.g. plumbing, cleaner)...',
-                  prefixIcon: const Icon(Icons.search, color: AppColors.primary),
+                  prefixIcon:
+                      const Icon(Icons.search, color: AppColors.primary),
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.arrow_forward, color: AppColors.primary),
+                    icon: const Icon(Icons.arrow_forward,
+                        color: AppColors.primary),
                     onPressed: () {
                       if (_searchController.text.trim().isNotEmpty) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => SearchResultsScreen(initialQuery: _searchController.text.trim()),
+                            builder: (_) => SearchResultsScreen(
+                                initialQuery: _searchController.text.trim()),
                           ),
                         );
                       }
@@ -128,7 +173,8 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 ),
               ),
             ),
@@ -139,7 +185,8 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: ['All', 'Top Rated', 'Nearby', 'Available Today'].map((chip) {
+                children: ['All', 'Top Rated', 'Nearby', 'Available Today']
+                    .map((chip) {
                   final isSelected = _selectedFilterChip == chip;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
@@ -147,8 +194,11 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                       selected: isSelected,
                       label: Text(chip),
                       labelStyle: TextStyle(
-                        color: isSelected ? AppColors.textLight : AppColors.textPrimary,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected
+                            ? AppColors.textLight
+                            : AppColors.textPrimary,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
                         fontSize: 13,
                       ),
                       backgroundColor: AppColors.surface,
@@ -157,12 +207,14 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                         side: BorderSide(
-                          color: isSelected ? AppColors.primary : AppColors.cardBorder,
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.cardBorder,
                         ),
                       ),
                       onSelected: (selected) {
                         setState(() {
-                          _selectedFilterChip = chip;
+                          _selectedFilterChip = selected ? chip : 'All';
                         });
                       },
                     ),
@@ -173,170 +225,184 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
 
             const SizedBox(height: 20),
 
-            // Promo Banner ('First job on us' discount banner from Milestone 02 User Testing)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.primary, AppColors.primaryLight],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withOpacity(0.2),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
+            if (_selectedFilterChip == 'All') ...[
+              // Promo Banner ('First job on us' discount banner from Milestone 02 User Testing)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryLight],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.accent,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: const Text(
-                            'SPECIAL OFFER',
-                            style: TextStyle(
-                              color: AppColors.primaryDark,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.accent,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'SPECIAL OFFER',
+                              style: TextStyle(
+                                color: AppColors.primaryDark,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          '20% Off Your First Booking',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                          const SizedBox(height: 8),
+                          const Text(
+                            '20% Off Your First Booking',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Guaranteed verified professionals with upfront pricing',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
-                        ),
-                      ],
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Guaranteed verified professionals with upfront pricing',
+                            style:
+                                TextStyle(color: Colors.white70, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.verified_user,
+                        color: Colors.white, size: 48),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Browse by Category Section Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Flexible(
+                    child: Text(
+                      'Browse by Category',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
-                  const Icon(Icons.verified_user, color: Colors.white, size: 48),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const SearchResultsScreen()),
+                      );
+                    },
+                    child: const Text('See All',
+                        style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold)),
+                  ),
                 ],
               ),
-            ),
+              const SizedBox(height: 12),
 
-            const SizedBox(height: 24),
-
-            // Browse by Category Section Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Flexible(
-                  child: Text(
-                    'Browse by Category',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
+              // Category Grid (2 columns or 3 columns responsive)
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: AppConstants.serviceCategories.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 0.85,
                 ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const SearchResultsScreen()),
-                    );
-                  },
-                  child: const Text('See All', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Category Grid (2 columns or 3 columns responsive)
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: AppConstants.serviceCategories.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.85,
-              ),
-              itemBuilder: (context, index) {
-                final cat = AppConstants.serviceCategories[index];
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => SearchResultsScreen(selectedCategory: cat['id']),
+                itemBuilder: (context, index) {
+                  final cat = AppConstants.serviceCategories[index];
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              SearchResultsScreen(selectedCategory: cat['id']),
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.cardBorder),
                       ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.cardBorder),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundColor: AppColors.surfaceMuted,
-                          child: Icon(cat['icon'] as IconData, color: AppColors.primary, size: 20),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          cat['name'] as String,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 8),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundColor: AppColors.surfaceMuted,
+                            child: Icon(cat['icon'] as IconData,
+                                color: AppColors.primary, size: 20),
                           ),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          cat['count'] as String,
-                          style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
-                        ),
-                      ],
+                          const SizedBox(height: 6),
+                          Text(
+                            cat['name'] as String,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${_appState.providers.where((p) => p.category == cat['id']).length} providers',
+                            style: const TextStyle(
+                                fontSize: 10, color: AppColors.textSecondary),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
 
-            const SizedBox(height: 28),
-
+              const SizedBox(height: 28),
+            ],
             // Providers Near You Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Flexible(
+                Flexible(
                   child: Text(
-                    'Providers Near You',
-                    style: TextStyle(
+                    _selectedFilterChip == 'All'
+                        ? 'Providers Near You'
+                        : '$_selectedFilterChip Providers',
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -344,13 +410,29 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                   ),
                 ),
                 Text(
-                  '${providers.length} available',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  '${providers.length} found',
+                  style: const TextStyle(
+                      fontSize: 12, color: AppColors.textSecondary),
                 ),
               ],
             ),
             const SizedBox(height: 12),
 
+            if (_selectedFilterChip != 'All')
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(_selectedFilterChip == 'Top Rated'
+                    ? 'Rated 4.8 stars or higher'
+                    : _selectedFilterChip == 'Nearby'
+                        ? 'Within 3 km, nearest first'
+                        : 'Providers marked available today'),
+              ),
+            if (providers.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Text(
+                    'No providers match this filter. Select All to see every provider.'),
+              ),
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -388,7 +470,8 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                               width: 68,
                               height: 68,
                               color: AppColors.surfaceMuted,
-                              child: const Icon(Icons.person, color: AppColors.primary),
+                              child: const Icon(Icons.person,
+                                  color: AppColors.primary),
                             ),
                           ),
                         ),
@@ -413,7 +496,8 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                                   ),
                                   if (p.isVerified) ...[
                                     const SizedBox(width: 4),
-                                    const Icon(Icons.verified, size: 15, color: AppColors.primary),
+                                    const Icon(Icons.verified,
+                                        size: 15, color: AppColors.primary),
                                   ],
                                 ],
                               ),
@@ -422,7 +506,9 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                                 '${p.category.toUpperCase()} • ${p.experienceYears}y exp',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                                style: const TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.textSecondary),
                               ),
                               const SizedBox(height: 4),
                               Wrap(
@@ -433,22 +519,30 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Icon(Icons.star, size: 13, color: AppColors.starFilled),
+                                      const Icon(Icons.star,
+                                          size: 13,
+                                          color: AppColors.starFilled),
                                       const SizedBox(width: 2),
                                       Text(
                                         '${p.rating} (${p.reviewCount})',
-                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                        style: const TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ],
                                   ),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.location_on_outlined, size: 13, color: Colors.grey.shade500),
+                                      Icon(Icons.location_on_outlined,
+                                          size: 13,
+                                          color: Colors.grey.shade500),
                                       const SizedBox(width: 2),
                                       Text(
                                         '${p.distanceKm} km',
-                                        style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                                        style: const TextStyle(
+                                            fontSize: 11,
+                                            color: AppColors.textSecondary),
                                       ),
                                     ],
                                   ),
@@ -462,7 +556,8 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                           children: [
                             Text(
                               'From',
-                              style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                              style: TextStyle(
+                                  fontSize: 10, color: Colors.grey.shade600),
                             ),
                             Text(
                               'Rs. ${p.startingPrice.toInt()}',
@@ -474,7 +569,8 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
                             ),
                             const SizedBox(height: 4),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
                                 color: AppColors.primary.withOpacity(0.08),
                                 borderRadius: BorderRadius.circular(8),

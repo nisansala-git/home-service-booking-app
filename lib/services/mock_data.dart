@@ -4,6 +4,7 @@ class MockData {
   static List<ServiceProvider> providers = [
     ServiceProvider(
       id: 'prov_kamal',
+      isAvailableToday: true,
       name: 'Kamal Perera',
       category: 'plumbing',
       rating: 4.8,
@@ -13,18 +14,28 @@ class MockData {
       experienceYears: 6,
       startingPrice: 1200.0,
       distanceKm: 1.8,
-      imageUrl: 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?w=400',
-      about: 'Licensed master plumber with 6+ years of experience handling residential plumbing repairs, leak detection, drainage fixes, and tap replacements in the Colombo and Gampaha areas.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?w=400',
+      about:
+          'Licensed master plumber with 6+ years of experience handling residential plumbing repairs, leak detection, drainage fixes, and tap replacements in the Colombo and Gampaha areas.',
       pastWorkImages: [
         'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=400',
         'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=400',
         'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400',
       ],
       pricingTable: [
-        {'item': 'Tap replacement / repair', 'price': 1200.0, 'unit': 'per tap'},
+        {
+          'item': 'Tap replacement / repair',
+          'price': 1200.0,
+          'unit': 'per tap'
+        },
         {'item': 'Pipe leak repair', 'price': 2500.0, 'unit': 'fixed quote'},
         {'item': 'Drainage unblocking', 'price': 3000.0, 'unit': 'standard'},
-        {'item': 'Complete bathroom checkup', 'price': 4500.0, 'unit': 'full inspect'},
+        {
+          'item': 'Complete bathroom checkup',
+          'price': 4500.0,
+          'unit': 'full inspect'
+        },
       ],
     ),
     ServiceProvider(
@@ -38,8 +49,10 @@ class MockData {
       experienceYears: 4,
       startingPrice: 2000.0,
       distanceKm: 2.3,
-      imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
-      about: 'Professional home & deep cleaning specialist. Equipped with eco-friendly sanitizing tools, verified background check, and trusted by hundreds of homeowners.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
+      about:
+          'Professional home & deep cleaning specialist. Equipped with eco-friendly sanitizing tools, verified background check, and trusted by hundreds of homeowners.',
       pastWorkImages: [
         'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400',
         'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=400',
@@ -61,16 +74,30 @@ class MockData {
       experienceYears: 4,
       startingPrice: 1800.0,
       distanceKm: 3.5,
-      imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-      about: 'Specialist in custom kitchen cabinets, bathroom vanities, wardrobe drawer repairs, and door lock adjustments. Clear upfront quotes and formal contracts before work begins.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+      about:
+          'Specialist in custom kitchen cabinets, bathroom vanities, wardrobe drawer repairs, and door lock adjustments. Clear upfront quotes and formal contracts before work begins.',
       pastWorkImages: [
         'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=400',
         'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=400',
       ],
       pricingTable: [
-        {'item': 'Hinge / lock adjustment', 'price': 1800.0, 'unit': 'per door'},
-        {'item': 'Drawer runner replacement', 'price': 2400.0, 'unit': 'per drawer'},
-        {'item': 'Cabinet shelf installation', 'price': 4000.0, 'unit': 'per unit'},
+        {
+          'item': 'Hinge / lock adjustment',
+          'price': 1800.0,
+          'unit': 'per door'
+        },
+        {
+          'item': 'Drawer runner replacement',
+          'price': 2400.0,
+          'unit': 'per drawer'
+        },
+        {
+          'item': 'Cabinet shelf installation',
+          'price': 4000.0,
+          'unit': 'per unit'
+        },
       ],
     ),
     ServiceProvider(
@@ -84,15 +111,25 @@ class MockData {
       experienceYears: 7,
       startingPrice: 1500.0,
       distanceKm: 1.2,
-      imageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
-      about: 'Certified residential electrician. Emergency trip switch repairs, light fixture installations, rewiring diagnostics, and surge protection.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
+      about:
+          'Certified residential electrician. Emergency trip switch repairs, light fixture installations, rewiring diagnostics, and surge protection.',
       pastWorkImages: [
         'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400',
       ],
       pricingTable: [
-        {'item': 'Trip switch fault check', 'price': 1500.0, 'unit': 'inspection'},
+        {
+          'item': 'Trip switch fault check',
+          'price': 1500.0,
+          'unit': 'inspection'
+        },
         {'item': 'Ceiling fan install', 'price': 2200.0, 'unit': 'per fan'},
-        {'item': 'New power point wiring', 'price': 2800.0, 'unit': 'per point'},
+        {
+          'item': 'New power point wiring',
+          'price': 2800.0,
+          'unit': 'per point'
+        },
       ],
     ),
   ];
@@ -145,7 +182,8 @@ class MockData {
       providerId: 'prov_nadesha',
       customerName: 'Poornima M.',
       rating: 5.0,
-      comment: 'Very professional, arrived exactly on time and the kitchen was spotless! Pricing was completely upfront with no surprise costs.',
+      comment:
+          'Very professional, arrived exactly on time and the kitchen was spotless! Pricing was completely upfront with no surprise costs.',
       tags: ['On time', 'Great work', 'Polite', 'Cleaned up'],
       createdAt: DateTime.now().subtract(const Duration(days: 4)),
     ),
@@ -155,7 +193,8 @@ class MockData {
       providerId: 'prov_kamal',
       customerName: 'Rohan D.',
       rating: 5.0,
-      comment: 'Fixed our leaking pipe quickly. Explained what caused it and gave a transparent quote before touching anything.',
+      comment:
+          'Fixed our leaking pipe quickly. Explained what caused it and gave a transparent quote before touching anything.',
       tags: ['Professional', 'Fast service', 'Fair price'],
       createdAt: DateTime.now().subtract(const Duration(days: 8)),
     ),
