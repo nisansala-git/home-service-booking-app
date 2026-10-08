@@ -13,7 +13,7 @@ Firebase setup for Member 1
 Public providers use the Authentication UID as document ID. Phone/email/area live
 in the owner-only provider_private collection. Passwords never enter Firestore.
 Email verification does not imply identity, insurance, or background verification.
-Real SMS, document uploads, payments, and other members' booking/review persistence
+Real SMS, payments, and other members' booking/review persistence
 are not connected by this Member 1 implementation. Samples are local fallback only.
 
 If saving fails, remain on verification and retry after correcting Firebase setup.
@@ -22,3 +22,10 @@ registration, sign in first and refill the registration form using the same emai
 Writes may complete after a timeout; retries use the same UID to avoid duplicates.
 
 Reference: https://firebase.google.com/docs/auth/flutter/password-auth
+
+Document uploads: enable Build → Storage in Firebase Console, then publish
+storage.rules in Storage → Rules. Use the bucket configured in firebase_options.dart.
+The form accepts PDF/JPG/PNG up to 5 MB. It uploads after email verification,
+before saving the profile. Only the owner can read their document; no public
+download URL is generated. An uploaded document does not grant verified status.
+Without Storage setup, omit the optional document to register.

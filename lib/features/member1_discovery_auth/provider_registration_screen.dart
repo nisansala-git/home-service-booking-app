@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:typed_data';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/common_widgets.dart';
@@ -27,7 +29,41 @@ class _ProviderRegistrationScreenState
 
   String _selectedCategory = 'plumbing';
   bool _agreedToTerms = false;
-  bool _idUploaded = false;
+  Uint8List? _documentBytes;
+  String? _documentName;
+  bool _pickingDocument = false;
+  bool get _idUploaded => _documentBytes != null;
+
+  Future<void> _pickDocument() async {
+    if (_pickingDocument) return;
+    setState(() => _pickingDocument = true);
+    try {
+      final files = await FilePicker.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png']);
+      if (files.isEmpty) return;
+      final file = files.first;
+      final size = await file.length();
+      if (size == null || size <= 0 || size > 5 * 1024 * 1024) {
+        throw StateError('Choose a nonempty document smaller than 5 MB.');
+      }
+      final bytes = await file.readAsBytes();
+      if (bytes.isEmpty || bytes.length > 5 * 1024 * 1024) {
+        throw StateError('Choose a nonempty document smaller than 5 MB.');
+      }
+      if (!mounted) return;
+      setState(() {
+        _documentBytes = bytes;
+        _documentName = file.name;
+      });
+    } catch (error) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not select document: $error')));
+    } finally {
+      if (mounted) setState(() => _pickingDocument = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -60,6 +96,8 @@ class _ProviderRegistrationScreenState
           category: _selectedCategory,
           email: _emailController.text.trim(),
           password: _passwordController.text,
+          documentBytes: _documentBytes,
+          documentName: _documentName,
           area: _areaController.text.trim(),
           startingPrice: double.tryParse(_rateController.text.trim()) ?? 1500.0,
         ),
@@ -208,18 +246,11 @@ class _ProviderRegistrationScreenState
               const SizedBox(height: 16),
 
               // Upload ID / Certification
-              const Text(
-                  'National ID / Trade Certification (Optional for preview)',
+              const Text('National ID / Trade Certification (Optional)',
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 6),
               InkWell(
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'Document uploads are not connected yet. You can register without a document.')),
-                  );
-                },
+                onTap: _pickingDocument ? null : _pickDocument,
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
@@ -244,8 +275,14 @@ class _ProviderRegistrationScreenState
                             _idUploaded ? AppColors.success : AppColors.primary,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        'Document upload coming soon',
+                      Expanded(
+                          child: Text(
+                        _pickingDocument
+                            ? 'Opening file picker…'
+                            : _documentName ??
+                                'Choose PDF, JPG or PNG (max 5 MB)',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: _idUploaded
                               ? AppColors.success
@@ -253,11 +290,22 @@ class _ProviderRegistrationScreenState
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
-                      ),
+                      )),
                     ],
                   ),
                 ),
               ),
+              if (_idUploaded) ...[
+                const Text(
+                    'Selected — uploaded privately when you save your profile.',
+                    style: TextStyle(fontSize: 12)),
+                TextButton(
+                    onPressed: () => setState(() {
+                          _documentBytes = null;
+                          _documentName = null;
+                        }),
+                    child: const Text('Remove document')),
+              ],
               const SizedBox(height: 20),
 
               // Terms & Conditions Checkbox

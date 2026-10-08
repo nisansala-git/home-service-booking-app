@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/models.dart';
 import '../../services/provider_backend.dart';
@@ -7,6 +8,8 @@ import '../../services/app_state_service.dart';
 class ProviderVerificationScreen extends StatefulWidget {
   final String name, phone, category, email, area, password;
   final double startingPrice;
+  final Uint8List? documentBytes;
+  final String? documentName;
   const ProviderVerificationScreen(
       {super.key,
       required this.name,
@@ -15,7 +18,9 @@ class ProviderVerificationScreen extends StatefulWidget {
       required this.email,
       required this.area,
       required this.password,
-      required this.startingPrice});
+      required this.startingPrice,
+      this.documentBytes,
+      this.documentName});
   @override
   State<ProviderVerificationScreen> createState() =>
       _ProviderVerificationScreenState();
@@ -86,7 +91,9 @@ class _ProviderVerificationScreenState
           ],
         );
         await backend.saveProfile(
-            provider, widget.phone, widget.email, widget.area);
+            provider, widget.phone, widget.email, widget.area,
+            documentBytes: widget.documentBytes,
+            documentName: widget.documentName);
         AppStateService().connectProviders();
         saved = true;
         message =
