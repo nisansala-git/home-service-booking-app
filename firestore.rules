@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(id) {
+      return request.auth != null && request.auth.uid == id
+        && request.auth.token.email_verified == true;
+    }
+    match /providers/{id} {
+      allow read: if true;
+      allow create: if owner(id) && request.resource.data.keys().hasOnly([
+          'id', 'name', 'category', 'rating', 'reviewCount', 'jobsCompleted',
+          'onTimePercentage', 'experienceYears', 'startingPrice', 'distanceKm',
+          'isAvailableToday', 'isVerified', 'isBackgroundChecked', 'isInsured',
+          'imageUrl', 'about', 'pastWorkImages', 'pricingTable'])
+        && request.resource.data.id == id
+        && request.resource.data.isVerified == false
+        && request.resource.data.isBackgroundChecked == false
+        && request.resource.data.isInsured == false
+        && request.resource.data.rating == 0
+        && request.resource.data.reviewCount == 0
+        && request.resource.data.jobsCompleted == 0
+        && request.resource.data.startingPrice is number
+        && request.resource.data.startingPrice > 0;
+      allow update: if owner(id) && request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['name', 'category', 'about', 'startingPrice', 'pricingTable', 'isAvailableToday', 'imageUrl', 'pastWorkImages']);
+      allow delete: if owner(id);
+    }
+    match /provider_private/{id} {
+      allow read, write: if owner(id);
+    }
+  }
+}

@@ -17,7 +17,10 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     ).timeout(const Duration(seconds: 15));
+    AppStateService().connectProviders();
   } catch (error) {
+    AppStateService().backendError =
+        'Firebase could not connect. Showing sample providers.';
     debugPrint('[Firebase] Initialization failed; using local data: $error');
   }
 }

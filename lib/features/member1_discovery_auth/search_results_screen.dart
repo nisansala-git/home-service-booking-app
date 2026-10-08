@@ -29,12 +29,14 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   @override
   void initState() {
     super.initState();
+    _appState.addListener(_refresh);
     _searchController = TextEditingController(text: widget.initialQuery);
     _currentCategory = widget.selectedCategory ?? '';
   }
 
   @override
   void dispose() {
+    _appState.removeListener(_refresh);
     _searchController.dispose();
     super.dispose();
   }
@@ -55,6 +57,10 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     return list;
   }
 
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final results = _getFilteredProviders();
@@ -63,7 +69,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       appBar: AppBar(
         title: TextField(
           controller: _searchController,
-          autofocus: widget.initialQuery.isEmpty && widget.selectedCategory == null,
+          autofocus:
+              widget.initialQuery.isEmpty && widget.selectedCategory == null,
           onChanged: (_) => setState(() {}),
           decoration: const InputDecoration(
             hintText: 'Search provider or skill...',
@@ -96,7 +103,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: ['All', 'Top Rated', 'Price (Low)', 'Nearest'].map((f) {
+                children:
+                    ['All', 'Top Rated', 'Price (Low)', 'Nearest'].map((f) {
                   final selected = _activeFilter == f;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
@@ -107,7 +115,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                       labelStyle: TextStyle(
                         color: selected ? Colors.white : AppColors.textPrimary,
                         fontSize: 12,
-                        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight:
+                            selected ? FontWeight.bold : FontWeight.normal,
                       ),
                       onSelected: (_) {
                         setState(() => _activeFilter = f);
@@ -127,14 +136,20 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
               children: [
                 Text(
                   '${results.length} verified pros found',
-                  style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.textSecondary, fontSize: 13),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
+                      fontSize: 13),
                 ),
                 if (_currentCategory.isNotEmpty)
                   GestureDetector(
                     onTap: () => setState(() => _currentCategory = ''),
                     child: Text(
                       'Clear Category: $_currentCategory',
-                      style: const TextStyle(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
               ],
@@ -148,16 +163,22 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
+                        Icon(Icons.search_off,
+                            size: 64, color: Colors.grey.shade400),
                         const SizedBox(height: 12),
-                        const Text('No providers found matching your filter.', style: TextStyle(fontWeight: FontWeight.bold)),
+                        const Text('No providers found matching your filter.',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 6),
-                        const Text('Try searching for another service or removing filters.', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                        const Text(
+                            'Try searching for another service or removing filters.',
+                            style: TextStyle(
+                                color: AppColors.textSecondary, fontSize: 13)),
                       ],
                     ),
                   )
                 : ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     itemCount: results.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
@@ -193,33 +214,51 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
                                           Text(
                                             p.name,
-                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
                                           ),
                                           const SizedBox(width: 4),
                                           if (p.isVerified)
-                                            const Icon(Icons.verified, size: 16, color: AppColors.primary),
+                                            const Icon(Icons.verified,
+                                                size: 16,
+                                                color: AppColors.primary),
                                         ],
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
                                         '${p.category.toUpperCase()} • ${p.experienceYears} Years Exp',
-                                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            color: AppColors.textSecondary),
                                       ),
                                       const SizedBox(height: 4),
                                       Row(
                                         children: [
-                                          const Icon(Icons.star, size: 14, color: AppColors.starFilled),
+                                          const Icon(Icons.star,
+                                              size: 14,
+                                              color: AppColors.starFilled),
                                           const SizedBox(width: 3),
-                                          Text('${p.rating} (${p.reviewCount})', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                          Text('${p.rating} (${p.reviewCount})',
+                                              style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold)),
                                           const SizedBox(width: 10),
-                                          Icon(Icons.near_me_outlined, size: 13, color: Colors.grey.shade500),
-                                          Text(' ${p.distanceKm} km away', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                          Icon(Icons.near_me_outlined,
+                                              size: 13,
+                                              color: Colors.grey.shade500),
+                                          Text(' ${p.distanceKm} km away',
+                                              style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color:
+                                                      AppColors.textSecondary)),
                                         ],
                                       ),
                                     ],
@@ -232,7 +271,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                               p.about,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                              style: const TextStyle(
+                                  fontSize: 12, color: AppColors.textSecondary),
                             ),
                             const Divider(height: 20),
                             Row(
@@ -241,25 +281,37 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('Estimated Starting', style: TextStyle(fontSize: 10, color: AppColors.textSecondary)),
-                                    Text('Rs. ${p.startingPrice.toInt()}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                                    const Text('Estimated Starting',
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            color: AppColors.textSecondary)),
+                                    Text('Rs. ${p.startingPrice.toInt()}',
+                                        style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.primary)),
                                   ],
                                 ),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
                                     minimumSize: const Size(110, 40),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                   ),
                                   onPressed: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => ProviderProfileScreen(provider: p),
+                                        builder: (_) =>
+                                            ProviderProfileScreen(provider: p),
                                       ),
                                     );
                                   },
-                                  child: const Text('View Profile', style: TextStyle(fontSize: 13, color: Colors.white)),
+                                  child: const Text('View Profile',
+                                      style: TextStyle(
+                                          fontSize: 13, color: Colors.white)),
                                 ),
                               ],
                             ),

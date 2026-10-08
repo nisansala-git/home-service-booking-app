@@ -4,6 +4,7 @@ import '../../core/theme/app_theme.dart';
 import '../../services/app_state_service.dart';
 import 'search_results_screen.dart';
 import 'provider_registration_screen.dart';
+import 'provider_account_screen.dart';
 import '../member2_booking_contract/provider_profile_screen.dart';
 
 /// Member 1 (IT23684980): Home / Service Discovery Screen (Variant A)
@@ -93,6 +94,13 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
           ],
         ),
         actions: [
+          IconButton(
+              tooltip: 'Provider account',
+              icon: const Icon(Icons.account_circle_outlined),
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const ProviderAccountScreen()))),
           // Registration CTA as per Milestone 02 Variant A design
           TextButton.icon(
             style: TextButton.styleFrom(
@@ -124,6 +132,15 @@ class _HomeDiscoveryScreenState extends State<HomeDiscoveryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (_appState.backendError != null)
+              Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Text(_appState.backendError!)),
+            if (!_appState.cloudConnected)
+              const Padding(
+                  padding: EdgeInsets.only(bottom: 12),
+                  child:
+                      Text('Sample providers — connecting to saved profiles…')),
             // Search Bar (Incorporating feedback from User 03: "Search for a service")
             Container(
               decoration: BoxDecoration(

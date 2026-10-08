@@ -1,12 +1,33 @@
 import 'package:flutter/foundation.dart';
 import '../models/models.dart';
 import 'mock_data.dart';
+import 'dart:async';
+import 'provider_backend.dart';
 
 /// Central state manager handling CRUD operations for all 4 member modules
 class AppStateService extends ChangeNotifier {
   static final AppStateService _instance = AppStateService._internal();
   factory AppStateService() => _instance;
   AppStateService._internal();
+
+  StreamSubscription? _providerSubscription;
+  String? backendError;
+  bool cloudConnected = false;
+  void connectProviders() {
+    _providerSubscription?.cancel();
+    _providerSubscription =
+        ProviderBackend.instance.watchProviders().listen((records) {
+      _providers = records;
+      cloudConnected = true;
+      backendError = null;
+      notifyListeners();
+    }, onError: (Object error) {
+      cloudConnected = false;
+      backendError =
+          'Could not load saved providers. Check your connection and Firebase setup.';
+      notifyListeners();
+    });
+  }
 
   // Active user role switcher (for viva and evaluation: Homeowner vs Provider)
   String _activeRole = 'homeowner'; // 'homeowner' | 'provider'
@@ -22,9 +43,12 @@ class AppStateService extends ChangeNotifier {
   List<ServiceProvider> get providers => _providers;
 
   // READ (Filtered)
-  List<ServiceProvider> getProvidersByCategory(String? category, {String query = ''}) {
+  List<ServiceProvider> getProvidersByCategory(String? category,
+      {String query = ''}) {
     return _providers.where((p) {
-      final matchesCategory = category == null || category.isEmpty || p.category.toLowerCase() == category.toLowerCase();
+      final matchesCategory = category == null ||
+          category.isEmpty ||
+          p.category.toLowerCase() == category.toLowerCase();
       final matchesQuery = query.isEmpty ||
           p.name.toLowerCase().contains(query.toLowerCase()) ||
           p.category.toLowerCase().contains(query.toLowerCase()) ||
@@ -139,7 +163,8 @@ class AppStateService extends ChangeNotifier {
       createNotification(
         recipientId: old.providerId,
         title: 'Contract Signed & Deposit Paid',
-        message: '${old.customerName} signed the contract and paid Rs. ${old.depositAmount.toInt()}.',
+        message:
+            '${old.customerName} signed the contract and paid Rs. ${old.depositAmount.toInt()}.',
         type: 'deposit_received',
         bookingId: old.id,
       );
@@ -220,7 +245,8 @@ class AppStateService extends ChangeNotifier {
   }
 
   // --- MEMBER 4: Notifications, Job Details & History CRUD ---
-  List<AppNotification> _notifications = List.from(MockData.initialNotifications);
+  List<AppNotification> _notifications =
+      List.from(MockData.initialNotifications);
   List<AppNotification> get notifications => _notifications;
 
   List<AppNotification> getNotificationsFor(String recipientId) {
