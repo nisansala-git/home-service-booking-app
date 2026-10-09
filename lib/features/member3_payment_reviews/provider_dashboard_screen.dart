@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
-import '../../models/models.dart';
 import '../../services/app_state_service.dart';
 import '../member4_notifications_history/provider_notifications_screen.dart';
 
