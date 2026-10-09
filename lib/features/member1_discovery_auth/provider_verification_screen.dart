@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
+import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/models.dart';
 import '../../services/provider_backend.dart';
@@ -29,6 +31,15 @@ class ProviderVerificationScreen extends StatefulWidget {
 class _ProviderVerificationScreenState
     extends State<ProviderVerificationScreen> {
   bool busy = false, accountCreated = false, saved = false;
+  bool uploadFailed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = ProviderBackend.instance.auth.currentUser;
+    accountCreated = user != null && user.email == widget.email;
+  }
+
   String message = 'Create your account to receive an email verification link.';
   Future<void> perform(Future<void> Function() action) async {
     if (busy) return;
@@ -37,6 +48,15 @@ class _ProviderVerificationScreenState
       await action();
     } on FirebaseAuthException catch (e) {
       message = e.message ?? e.code;
+    } on FirebaseException catch (e) {
+      uploadFailed = e.plugin == 'firebase_storage';
+      message = uploadFailed
+          ? 'Your email is verified, but the document could not upload (${e.code}). Check Firebase Storage and its rules, or save without the optional document.'
+          : 'Could not save your profile (${e.code}). Check that Firestore is created and its rules are published.';
+    } on TimeoutException {
+      uploadFailed = widget.documentBytes != null;
+      message =
+          'Saving timed out. Check your connection and Firebase setup, then retry. You can save without the optional document.';
     } catch (e) {
       message =
           'Could not complete this step. Check Firebase setup and your connection, then retry. $e';
@@ -56,7 +76,7 @@ class _ProviderVerificationScreenState
         message =
             'Check ${widget.email} for the verification link, then return here.';
       });
-  Future<void> complete() => perform(() async {
+  Future<void> complete({bool skipDocument = false}) => perform(() async {
         final backend = ProviderBackend.instance;
         await backend.auth.currentUser!.reload();
         final user = backend.auth.currentUser!;
@@ -92,8 +112,8 @@ class _ProviderVerificationScreenState
         );
         await backend.saveProfile(
             provider, widget.phone, widget.email, widget.area,
-            documentBytes: widget.documentBytes,
-            documentName: widget.documentName);
+            documentBytes: skipDocument ? null : widget.documentBytes,
+            documentName: skipDocument ? null : widget.documentName);
         AppStateService().connectProviders();
         saved = true;
         message =
@@ -117,8 +137,13 @@ class _ProviderVerificationScreenState
             const SizedBox(height: 12),
             if (accountCreated)
               ElevatedButton(
-                  onPressed: busy ? null : complete,
+                  onPressed: busy ? null : () => complete(),
                   child: const Text('I verified my email — save profile')),
+            if (accountCreated && widget.documentBytes != null)
+              TextButton(
+                onPressed: busy ? null : () => complete(skipDocument: true),
+                child: const Text('Save profile without optional document'),
+              ),
             const SizedBox(height: 16),
             const Text(
                 'Verification uses email, not SMS. Phone and email are stored privately; your service profile is public.'),

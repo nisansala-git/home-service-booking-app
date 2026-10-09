@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:typed_data';
+import 'dart:async';
 import '../models/models.dart';
 
 class ProviderBackend {
@@ -42,8 +43,12 @@ class ProviderBackend {
           documentBytes, SettableMetadata(contentType: types[extension]));
       try {
         await task.timeout(const Duration(seconds: 60));
-      } catch (_) {
-        await task.cancel();
+      } on TimeoutException {
+        // A finished/failed native task may already have been removed.
+        // Cleanup must never replace the original timeout with a cancel error.
+        try {
+          await task.cancel();
+        } catch (_) {}
         rethrow;
       }
     }
