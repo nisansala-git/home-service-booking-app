@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:typed_data';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/common_widgets.dart';
@@ -10,21 +12,58 @@ class ProviderRegistrationScreen extends StatefulWidget {
   const ProviderRegistrationScreen({super.key});
 
   @override
-  State<ProviderRegistrationScreen> createState() => _ProviderRegistrationScreenState();
+  State<ProviderRegistrationScreen> createState() =>
+      _ProviderRegistrationScreenState();
 }
 
-class _ProviderRegistrationScreenState extends State<ProviderRegistrationScreen> {
+class _ProviderRegistrationScreenState
+    extends State<ProviderRegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _areaController = TextEditingController();
   final _rateController = TextEditingController();
 
   String _selectedCategory = 'plumbing';
   bool _agreedToTerms = false;
-  bool _idUploaded = false;
+  Uint8List? _documentBytes;
+  String? _documentName;
+  bool _pickingDocument = false;
+  bool get _idUploaded => _documentBytes != null;
+
+  Future<void> _pickDocument() async {
+    if (_pickingDocument) return;
+    setState(() => _pickingDocument = true);
+    try {
+      final files = await FilePicker.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png']);
+      if (files.isEmpty) return;
+      final file = files.first;
+      final size = await file.length();
+      if (size == null || size <= 0 || size > 5 * 1024 * 1024) {
+        throw StateError('Choose a nonempty document smaller than 5 MB.');
+      }
+      final bytes = await file.readAsBytes();
+      if (bytes.isEmpty || bytes.length > 5 * 1024 * 1024) {
+        throw StateError('Choose a nonempty document smaller than 5 MB.');
+      }
+      if (!mounted) return;
+      setState(() {
+        _documentBytes = bytes;
+        _documentName = file.name;
+      });
+    } catch (error) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not select document: $error')));
+    } finally {
+      if (mounted) setState(() => _pickingDocument = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -32,6 +71,7 @@ class _ProviderRegistrationScreenState extends State<ProviderRegistrationScreen>
     _phoneController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _areaController.dispose();
     _rateController.dispose();
     super.dispose();
@@ -41,7 +81,8 @@ class _ProviderRegistrationScreenState extends State<ProviderRegistrationScreen>
     if (!_formKey.currentState!.validate()) return;
     if (!_agreedToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please accept the service terms and conditions.')),
+        const SnackBar(
+            content: Text('Please accept the service terms and conditions.')),
       );
       return;
     }
@@ -54,6 +95,9 @@ class _ProviderRegistrationScreenState extends State<ProviderRegistrationScreen>
           phone: _phoneController.text.trim(),
           category: _selectedCategory,
           email: _emailController.text.trim(),
+          password: _passwordController.text,
+          documentBytes: _documentBytes,
+          documentName: _documentName,
           area: _areaController.text.trim(),
           startingPrice: double.tryParse(_rateController.text.trim()) ?? 1500.0,
         ),
@@ -74,7 +118,10 @@ class _ProviderRegistrationScreenState extends State<ProviderRegistrationScreen>
             children: [
               const Text(
                 'Register Your Trade',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary),
               ),
               const SizedBox(height: 6),
               const Text(
@@ -84,45 +131,74 @@ class _ProviderRegistrationScreenState extends State<ProviderRegistrationScreen>
               const SizedBox(height: 24),
 
               // Full Name
-              const Text('Full Name', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const Text('Full Name',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(hintText: 'e.g. Kasun Wickramasinghe'),
-                validator: (v) => v == null || v.trim().isEmpty ? 'Please enter your name' : null,
+                decoration: const InputDecoration(
+                    hintText: 'e.g. Kasun Wickramasinghe'),
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? 'Please enter your name'
+                    : null,
               ),
               const SizedBox(height: 16),
 
               // Mobile Phone Number
-              const Text('Mobile Phone (for SMS OTP)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const Text('Contact phone (private)',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
                   hintText: '07X XXX XXXX',
-                  prefixIcon: Icon(Icons.phone_android, color: AppColors.primary),
+                  prefixIcon:
+                      Icon(Icons.phone_android, color: AppColors.primary),
                 ),
-                validator: (v) => v == null || v.trim().length < 9 ? 'Please enter a valid phone number' : null,
+                validator: (v) => v == null || v.trim().length < 9
+                    ? 'Please enter a valid phone number'
+                    : null,
               ),
               const SizedBox(height: 16),
 
               // Email Address
-              const Text('Email Address', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const Text('Email Address',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                   hintText: 'name@example.com',
-                  prefixIcon: Icon(Icons.email_outlined, color: AppColors.primary),
+                  prefixIcon:
+                      Icon(Icons.email_outlined, color: AppColors.primary),
                 ),
-                validator: (v) => v == null || !v.contains('@') ? 'Enter a valid email' : null,
+                validator: (v) => v == null || !v.contains('@')
+                    ? 'Enter a valid email'
+                    : null,
               ),
               const SizedBox(height: 16),
 
+              const Text('Password'),
+              TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  validator: (v) => v == null || v.length < 8
+                      ? 'Use at least 8 characters'
+                      : null),
+              const SizedBox(height: 16),
+              const Text('Confirm password'),
+              TextFormField(
+                  controller: _confirmPasswordController,
+                  obscureText: true,
+                  validator: (v) => v != _passwordController.text
+                      ? 'Passwords do not match'
+                      : null),
+              const SizedBox(height: 16),
               // Service Category Dropdown
-              const Text('Primary Trade Category', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const Text('Primary Trade Category',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 6),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
@@ -140,44 +216,53 @@ class _ProviderRegistrationScreenState extends State<ProviderRegistrationScreen>
               const SizedBox(height: 16),
 
               // Service Area
-              const Text('Service Area / Coverage', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const Text('Service Area / Coverage',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _areaController,
-                decoration: const InputDecoration(hintText: 'e.g. Colombo, Kandy, Gampaha'),
-                validator: (v) => v == null || v.isEmpty ? 'Please specify your area' : null,
+                decoration: const InputDecoration(
+                    hintText: 'e.g. Colombo, Kandy, Gampaha'),
+                validator: (v) =>
+                    v == null || v.isEmpty ? 'Please specify your area' : null,
               ),
               const SizedBox(height: 16),
 
               // Starting Rate
-              const Text('Standard Inspection / Starting Rate (Rs.)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const Text('Standard Inspection / Starting Rate (Rs.)',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _rateController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(hintText: 'e.g. 1500'),
-                validator: (v) => v == null || double.tryParse(v) == null ? 'Enter a valid amount' : null,
+                validator: (v) {
+                  final amount = double.tryParse(v ?? '');
+                  return amount == null || !amount.isFinite || amount <= 0
+                      ? 'Enter a positive amount'
+                      : null;
+                },
               ),
               const SizedBox(height: 16),
 
               // Upload ID / Certification
-              const Text('National ID / Trade Certification (Optional for preview)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const Text('National ID / Trade Certification (Optional)',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 6),
               InkWell(
-                onTap: () {
-                  setState(() => _idUploaded = !_idUploaded);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(_idUploaded ? 'NIC Document attached.' : 'NIC Document removed.')),
-                  );
-                },
+                onTap: _pickingDocument ? null : _pickDocument,
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: _idUploaded ? const Color(0xFFE8F5E9) : AppColors.surface,
+                    color: _idUploaded
+                        ? const Color(0xFFE8F5E9)
+                        : AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: _idUploaded ? AppColors.success : AppColors.cardBorder,
+                      color: _idUploaded
+                          ? AppColors.success
+                          : AppColors.cardBorder,
                       style: BorderStyle.solid,
                     ),
                   ),
@@ -186,21 +271,41 @@ class _ProviderRegistrationScreenState extends State<ProviderRegistrationScreen>
                     children: [
                       Icon(
                         _idUploaded ? Icons.check_circle : Icons.upload_file,
-                        color: _idUploaded ? AppColors.success : AppColors.primary,
+                        color:
+                            _idUploaded ? AppColors.success : AppColors.primary,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        _idUploaded ? 'NIC_Verified_Doc.pdf attached' : 'Tap to upload Government ID / Certificate',
+                      Expanded(
+                          child: Text(
+                        _pickingDocument
+                            ? 'Opening file picker…'
+                            : _documentName ??
+                                'Choose PDF, JPG or PNG (max 5 MB)',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: _idUploaded ? AppColors.success : AppColors.primary,
+                          color: _idUploaded
+                              ? AppColors.success
+                              : AppColors.primary,
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
-                      ),
+                      )),
                     ],
                   ),
                 ),
               ),
+              if (_idUploaded) ...[
+                const Text(
+                    'Selected — uploaded privately when you save your profile.',
+                    style: TextStyle(fontSize: 12)),
+                TextButton(
+                    onPressed: () => setState(() {
+                          _documentBytes = null;
+                          _documentName = null;
+                        }),
+                    child: const Text('Remove document')),
+              ],
               const SizedBox(height: 20),
 
               // Terms & Conditions Checkbox
@@ -211,7 +316,8 @@ class _ProviderRegistrationScreenState extends State<ProviderRegistrationScreen>
                 activeColor: AppColors.primary,
                 title: const Text(
                   'I agree to the FixIt Home Code of Conduct and Verified Provider Terms.',
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style:
+                      TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 ),
                 onChanged: (v) => setState(() => _agreedToTerms = v ?? false),
               ),

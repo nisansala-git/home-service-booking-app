@@ -1,0 +1,953 @@
+                     Sri Lanka Institute of Information Technology
+                                      Faculty of Computing
+
+                       IT3060 – Human Computer Interaction
+                                         Milestone 01
+
+
+                  Problem Selection, Stakeholder Identification & User Research
+
+                                       Problem Title:
+             Home Service Booking Application (Plumbers, Electricians, Cleaners, etc.)
+
+                                  Group Number: KND_HCI_G05
+
+
+
+
+Reg. No       Name                     Workload Distribution
+                                       Project Lead & Research Synthesis — problem selection &
+IT23684980    Amarasinghe A.A.P.D      justification, stakeholder categorization, thematic analysis, report
+                                       compilation & formatting
+
+                                       Research Planning & Execution — interview script design,
+IT23707122    N.M. Ariyathilake
+                                       participant recruitment, conducting the three stakeholder interviews
+
+                                       Personas & User Stories — persona development, empathy maps,
+IT23630802    M J M Musharaf
+                                       user stories, user journey map, HMW statements
+
+              TGCN                     Requirements & Documentation — functional/non-functional
+IT23710610
+              Karunathilaka            requirements, traceability, references, appendix, Gantt chart
+
+
+
+                               Date of Submission: 16th August 2026
+
+
+
+
+1|Page
+                                                     Table of Content
+1. Problem Statement and Justification for Selection .................................... 3
+1.1 Problem Statement .............................................................................. 3
+1.2 Justification for Selection .................................................................... 3
+2. Stakeholder Identification and Categorization ......................................... 3
+2.1 Primary Stakeholders (Direct Users) ....................................................... 3
+2.2 Secondary Stakeholders (Indirectly Affected) ........................................... 4
+2.3 Tertiary Stakeholders (External Influencers) ............................................ 4
+3. User Research Plan and Rationale for Chosen Technique(s) ...................... 4
+3.1 Research Objectives ............................................................................ 4
+3.2 Chosen Technique: Semi-Structured Interviews with a Live Website Task ...... 4
+4. Research Instrument(s) Used ................................................................. 5
+4.1 Homeowner Interview Script .................................................................. 5
+4.2 Service Provider (Carpenter) Interview Script ........................................... 5
+4.3 App Developer Interview Script .............................................................. 5
+5. Summary of Participants and Data Collection Process ............................... 5
+5.1 Participant Overview ............................................................................ 5
+5.2 Data Collection Process ....................................................................... 6
+5.3 Research Ethics Considerations ............................................................. 6
+6. Data Analysis (Method and Findings) ....................................................... 6
+6.1 Analysis Method: Thematic Analysis ........................................................ 6
+6.2 Key Findings ...................................................................................... 7
+Theme 1: Pricing Is a Trust Problem, Not Just a Money Problem ................ 6
+Theme 2: The Booking Confirmation Moment Is Weak ............................... 6
+Theme 3: A Broken Registration Step Nearly Lost a Provider Entirely ......... 7
+Theme 4: Everyone Wants Real Reviews and Real Work History ................. 7
+Theme 5: Real-Time Availability and Notifications Came Up Everywhere ...... 7
+Theme 6: Providers Need Structure the App Doesn't Currently Give Them .... 7
+Theme 7: The Technical Foundations Have to Support All of This ............... 7
+7. Personas with Empathy Maps .................................................................. 7
+User 01: Poornima Madubashini .............................................................. 8
+User 02: Rajeewa Wickramasinghe .......................................................... 8
+User 03: Mohommed Wazeem .................................................................. 9
+8. User Stories Derived from Research Findings ......................................... 10
+User Story 1: Upfront, Honest Pricing ..................................................... 10
+User Story 2: Instant, Reliable Booking Confirmation ................................ 10
+User Story 3: A Registration Flow That Actually Works .............................. 11
+User Story 4: Verified Reviews and Work History ...................................... 11
+User Story 5: Contracts and Deposits to Protect Both Sides ....................... 11
+User Story 6: Real-Time Availability and Notifications ............................... 11
+User Story 7: A Secure, Well-Built Platform Underneath It All .................... 11
+9. User Journey Map .............................................................................. 11
+9.1 Journey Map: Kasun's Attempt to Register as a Carpenter on Profit.lk ........ 11
+10. How Might We (HMW) Statements ......................................................... 12
+HMW Statement 1: Clear Pricing & Instant Confirmation ............................ 12
+HMW Statement 2: Reliable Provider Registration ...................................... 12
+HMW Statement 3: Stronger Reviews and Work History .............................. 12
+2|Page
+HMW Statement 4: Protect Service Providers from Scope Changes .............. 13
+HMW Statement 5: Build a Scalable, Secure Platform ............................... 13
+11. Elucidated User Requirements ............................................................ 13
+11.1 Functional Requirements .................................................................. 13
+11.2 Non-Functional Requirements ............................................................ 14
+12. Time Schedule (Gantt Chart) .............................................................. 14
+13. References ...................................................................................... 15
+
+
+
+1. Problem Statement and Justification for Selection
+1.1 Problem Statement
+People who need help around the house — a leaking tap, a wiring fault, a wardrobe that needs building —
+usually end up relying on word of mouth, a social media group, or whichever provider they used last time. There
+is no single place to check who is actually reliable, compare prices honestly, or know for certain that someone
+will turn up when they say they will. Discovery today is fragmented across informal referrals and directories
+such as Google Maps that list contact details but offer no integrated booking, verification, or accountability.
+Our own conversations with real stakeholders backed this up directly. A homeowner we interviewed said the
+biggest problem was not finding a plumber, but that
+     ➢ "service providers try to do their work quickly but get less attention for the quality of the work" —
+          Homeowner, Interview 1
+
+On the other side, a carpenter we interviewed told us that customers often change the scope of a job halfway
+through, which makes it difficult for him to plan his time or price the work fairly from the outset. Both
+perspectives point at the same underlying gap: there is no shared platform that gives homeowners transparency
+and gives service providers a fair, structured way to manage bookings, pricing, and expectations.
+The proposed Home-Service Booking Application addresses this by connecting verified providers with
+homeowners through a single platform that supports clear pricing, dependable booking confirmations, and
+accountability on both sides.
+
+1.2 Justification for Selection
+     ✓ Two interviews, opposite sides of the same problem — the homeowner wanted clearer pricing and
+       faster confirmation; the carpenter wanted a proper contract and a deposit system to protect against
+       customers changing the scope of work mid-job.
+     ✓ The same usability gaps kept surfacing independently — we asked a homeowner, a carpenter, and
+       an app developer to try the reference platform, Profit.lk, and all three raised similar problems (thin
+       reviews, unclear booking status), while the carpenter also hit a broken OTP step that stopped him
+       registering through the mobile app entirely.
+     ✓ A developer's perspective grounded the requirements in reality — rather than only end-user
+       opinions, we got a technical read on what's realistic: real-time availability and secure payment aren't
+       just feature requests, they're specific engineering requirements (encryption, PCI-DSS style payment
+       handling, authentication) that shape the whole system.
+     ✓ A genuinely wide stakeholder web — beyond the homeowner and the tradesperson, there are family
+       members affected by a stranger being in the house, neighbor’s affected by noise and parking, and a
+       compliance layer (licensing bodies, insurers, payment gateways) that a real version of this product
+       would need to satisfy.
+     ✓ A realistic scope for this milestone — small enough to interview real people about in the time
+       available, but rich enough to support proper personas, journey mapping, and a full set of requirements.
+
+2. Stakeholder Identification and Categorization
+3|Page
+We grouped the people affected by this problem into three tiers, based on how directly they interact with the
+app versus how much they are simply affected by decisions made around it.
+
+2.1 Primary Stakeholders (direct users)
+    ➢ Homeowners / Residents — the people who need a plumber, electrician, cleaner, or carpenter, and
+      who would open the app to book one.
+    ➢ Service Providers — plumbers, electricians, cleaners, carpenters, and similar tradespeople who
+      would use the app to find and manage jobs.
+We interviewed one person from each side of this tier — a homeowner and a carpenter.
+
+2.2 Secondary Stakeholders (indirectly affected)
+    ➢ Family members of the homeowner, who are around the house when a stranger arrives to do the work.
+    ➢ Neighbors, who deal with the noise, parked vehicles, and general disruption of a job happening next
+      door.
+    ➢ The service provider's own employees or assistants, who show up to help with larger jobs.
+We did not interview anyone from this tier for this milestone — our reasoning for them is drawn from what the
+two primary-stakeholder interviewees told us about the people around a job (for example, the carpenter
+mentioned that his company's project manager handles bookings and coordination on his behalf). Interviewing
+this tier directly is a target for the next round of research.
+
+2.3 Tertiary Stakeholders (external influencers)
+    ➢ App developers / platform owners — the people who would actually build and maintain the
+      platform.
+    ➢ Local government / regulatory bodies, for licensing and safety compliance.
+    ➢ Insurance companies, for liability coverage when something goes wrong on a job.
+    ➢ Payment gateway providers, who process the money changing hands.
+We interviewed an app developer for this tier, which gave us a technical and feasibility angle that the other two
+interviews could not provide on their own.
+
+3. User Research Plan and Rationale for Chosen Technique(s)
+3.1 Research Objectives
+    ➢ O1: Understand what actually goes wrong for homeowners when they try to book a home service
+      today.
+    ➢ O2: Understand what a service provider needs from a platform to make it worth using over word-of-
+      mouth.
+    ➢ O3: Get a technical/feasibility perspective on what's realistic to build, and what should be prioritised
+      from a UX and security standpoint.
+    ➢ O4: Directly test the reference platform, Profit.lk, with people from different stakeholder roles to
+      surface concrete usability problems rather than guessing at them.
+
+3.2 Chosen Technique: Semi-Structured Interviews with a Live Website Task
+We chose one-on-one semi-structured interviews over an anonymous questionnaire, for a few reasons:
+    ➢ Depth over breadth. With a small number of participants realistically reachable in the time available
+      for this milestone, interviews let us actually dig into an answer instead of collecting a shallow tick-
+      box response. When the carpenter mentioned that customers change requirements mid-job, we could
+      follow up on how he currently handles that — a questionnaire would not have given us that.
+
+4|Page
+    ➢ We could watch, not just ask. Each interview had a second part where the participant used the actual
+      Profit.lk website in front of us, performing a real task. This surfaced a problem no self-report question
+      would have caught: when the carpenter tried to register as a provider through the mobile app, the OTP
+      never arrived, and he had to fall back to the website. That is an observed usability failure, not an
+      opinion.
+    ➢ Different roles, different value. Rather than interviewing three homeowners, we deliberately
+      interviewed across stakeholder tiers — one homeowner, one service provider, and one app developer
+      — so the findings cover the experience from the demand side, the supply side, and the build side.
+    ➢ A deliberate trade-off for this stage. Interviews take longer per participant than a survey, which is
+      exactly why we kept the sample small and rich rather than broad and shallow right now. A wider
+      questionnaire is a sensible next step once we have concrete features to validate.
+Each interview followed the same two-part structure: Part A covered ten background questions specific to the
+participant's role, and Part B asked them to complete a short task on Profit.lk and reflect on the experience.
+
+4. Research Instrument(s) Used
+We used a semi-structured interview script tailored to each stakeholder role, each split into Part A
+(background/context, 10 questions) and Part B (a live task on Profit.lk, 4–5 follow-up questions). The full scripts
+and raw answers are included in Appendix A–C; a summary of what each part covered is below.
+
+4.1 Homeowner Interview Script
+Part A covered: which services they typically need, how often they hire help, how they currently find providers,
+what factors they weigh before choosing one, past problems they've faced, prior booking experience, how much
+they trust reviews, what information they expect before booking, preferred payment method, and what they'd
+change about the current process.
+Part B asked them to use Profit.lk to find and evaluate a plumbing service, then reflect on ease of navigation,
+clarity of provider information, and the booking flow itself.
+
+4.2 Service Provider (Carpenter) Interview Script
+Part A covered: the type of carpentry work they do, years of experience, how they currently find customers,
+what information they need before accepting a job, their biggest challenges, how they manage bookings,
+common customer complaints, what would make their work easier to manage, how they get paid, and what
+they'd change about the booking process.
+Part B asked them to try registering and browsing Profit.lk as a carpenter promoting their services, then reflect
+on how easy it was to be found, contacted, and understood by potential customers.
+
+4.3 App Developer Interview Script
+Part A covered: their development background, what they consider essential when building a booking app,
+must-have features, the biggest technical challenges, how important UI/UX is, how user feedback should shape
+the product, required security features, how to serve both customers and providers well, recommended
+technologies, and what they'd change about existing home-service apps.
+Part B asked them to evaluate Profit.lk from a usability and technical standpoint — first impressions of the UI,
+task efficiency, usability issues, missing features, and what they'd prioritise in a redesign.
+
+5. Summary of Participants and Data Collection Process
+5.1 Participant Overview
+
+
+
+
+5|Page
+ Participant              Stakeholder Tier       Role                                                Method
+                                                                                                     In-person
+                                                 Homeowner (occasional service user, mainly
+ Participant 1            Primary                                                                    interview + live
+                                                 plumbing)
+                                                                                                     Profit.lk task
+
+                                                                                                     In-person
+                                                                                                     interview + live
+                                                 Service Provider — Carpenter, 4+ years'             Profit.lk task (app
+ Participant 2            Primary
+                                                 experience                                          registration
+                                                                                                     attempted, then
+                                                                                                     website)
+
+                                                                                                     Interview +
+                                                 App Developer, ~5 years' experience (mobile &       Profit.lk
+ Participant 3            Tertiary
+                                                 web)                                                usability/technical
+                                                                                                     walkthrough
+
+
+Three participants were interviewed for this milestone, one for each role we prioritized given the time available:
+a service seeker, a service provider, and a technical/platform-side stakeholder. This gives us at least one
+perspective from two of the three stakeholder tiers identified in Section 2; secondary stakeholders (family
+members, neighbors) are earmarked for the next round of research.
+
+5.2 Data Collection Process
+ Phase                 Activity                                                                      Responsible
+                       Drafted the three role-specific interview scripts (Part A background + Part
+ Preparation                                                                                         Member 2
+                       B website task)
+
+                       Reached out to a homeowner, a carpenter, and a developer within our           Member 2 /
+ Recruitment
+                       networks                                                                      Member 4
+
+                       Conducted each interview in person, including the live Profit.lk task, and
+ Interviews                                                                                          Member 2
+                       recorded the answers
+
+ Processing            Transcribed and organised responses for thematic analysis                     Member 1
+
+
+
+5.3 Research Ethics Considerations
+    ✓ Each participant was told upfront why we were interviewing them and how their answers would be
+      used for this coursework.
+    ✓ No sensitive personal details were recorded beyond job role and general experience level.
+    ✓ Participation was voluntary, and participants could skip any question they weren't comfortable
+      answering.
+    ✓ Full interview transcripts are retained in Appendix A–C.
+
+6. Data Analysis (Method and Findings)
+6.1 Analysis Method: Thematic Analysis
+We used thematic analysis (Braun & Clarke's six-phase approach) on the three interview transcripts: reading
+through all the answers, coding recurring ideas, and grouping those codes into themes. Because the sample is
+small — three interviews — we are not reporting percentages here. The value in this data is the overlap: three
+very different people (a homeowner, a tradesperson, and a developer) independently raising the same concerns
+from three different angles.
+
+6.2 Key Findings
+6|Page
+Theme 1 — Pricing Is a Trust Problem, Not Just a Money Problem
+The homeowner ranked budget as a top factor when choosing a provider and flagged unclear pricing as a
+recurring frustration. The carpenter said
+    ➢ "most of the customers are worrying about the budget" - Carpenter, Interview 2
+and separately noted that customers changing requirements mid-job throws pricing off even further. This isn't
+only about the amount of money involved — it's about whether either side can trust the number they agreed on.
+
+Theme 2 — The Booking Confirmation Moment Is Weak
+The homeowner told us she
+    ➢ "expected to receive a booking confirmation immediately after submitting the request" - Homeowner,
+        Interview 1
+
+but did not get one. The carpenter and developer both independently flagged unclear or slow confirmation as a
+gap in the current experience. This is one specific, fixable moment in the flow that is causing a disproportionate
+amount of anxiety.
+
+Theme 3 — A Broken Registration Step Nearly Lost a Provider Entirely
+The carpenter tried to register on the Profit.lk app using his mobile number, but the OTP never arrived — he
+had to abandon the app and switch to the website to continue. This is one of the clearest, most concrete usability
+findings we collected: a technical failure at the very first step of onboarding a service provider, observed directly
+rather than reported after the fact.
+
+Theme 4 — Everyone Wants Real Reviews and Real Work History
+All three interviewees, independently, raised the same gap: the homeowner wanted
+    ➢ "more verified customer reviews and clearer pricing information" - Homeowner, Interview 1
+the carpenter wanted
+    ➢ "more details about previous work and customer reviews" - Carpenter, Interview 2
+and the developer separately recommended a booking history page as a feature the site is missing. Reviews and
+work history aren't a nice extra here — they're the main thing all three groups rely on to judge trust.
+
+Theme 5 — Real-Time Availability and Notifications Came Up Everywhere
+The homeowner wants live availability and faster confirmation; the carpenter wants notifications for new job
+requests; the developer separately named real-time provider availability and push notifications among his top
+recommendations. Three different roles arriving at the same feature — from the need side, the supply side, and
+the build side — is a strong signal that these matters.
+
+Theme 6 — Providers Need Structure the App Doesn't Currently Give Them
+The carpenter's answers point at a problem specific to his side of the transaction: customers changing scope
+mid-job. His own suggested fix was
+    ➢ "making a good contract before starting the work, and taking a deposit before the work starts" -
+        Carpenter, Interview 2
+
+A well-designed screen will not fix this by itself - it needs a contract and deposit mechanism built into the
+booking flow.
+
+Theme 7 — The Technical Foundations Have to Support All of This
+The developer's answers frame what's technically required underneath everything above. He named
+    ➢ "managing real-time availability, handling booking conflicts, ensuring data security, and providing a
+      fast user experience" - App Developer, Interview 3
+
+7|Page
+as the biggest challenges in building this kind of app, and separately called out secure login, encrypted user
+data, and protected payment processing as non-negotiable requirements.
+
+7. Personas with Empathy Maps
+We developed three personas, one for each interview participant, each grounded directly in what that person
+actually told us rather than a composite average.
+
+
+User 01:
+
+
+
+
+Empathy Map:
+
+ SAYS                                                             THINKS
+     ●     "Service providers try to do their work quickly          ●     "Will they actually do a good job, or just rush
+           but get less attention for the quality of the work."           it?"
+     ●     "I would like to see live availability, fixed            ●     "Did my booking even go through?"
+           pricing, and faster confirmation of bookings."
+
+ DOES                                                             FEELS
+     ●     Asks friends and searches online before booking          ●     Frustrated when providers cut corners on quality
+     ●     Checks reviews carefully before deciding                 ●     Uncertain while waiting for a confirmation that
+                                                                          never quite comes
+
+
+
+User 02:
+
+
+
+
+8|Page
+Empathy Map:
+
+ SAYS                                                         THINKS
+    ●      "Making a good platform to connect the service       ●     "Will this customer change the job halfway
+           providers and customers in a good manner,                  through again?"
+           making a good contract before starting the work,     ●     "Why didn't the verification code even arrive?"
+           and taking a deposit before the work starts."
+    ●      "Most of the customers are worrying about the
+           budget."
+
+ DOES                                                         FEELS
+    ●      Relies on his project manager to handle bookings     ●     Frustrated by scope changes mid-job
+           and appointments                                     ●     Mildly put off by a registration process that
+    ●      Switched from the app to the website after the             didn't work the first time
+           OTP failed
+
+
+
+User 03:
+
+
+
+
+9|Page
+Empathy Map:
+
+ SAYS                                                      THINKS
+     ●    "Managing real-time availability, handling         ●     "Will this hold up once real users start double-
+          booking conflicts, ensuring data security, and           booking slots?"
+          providing a fast user experience."                 ●     "Is the payment flow actually secure, or does it
+     ●    "Secure login, encrypted user data, protected            just look secure?"
+          payment processing, and proper user
+          authentication."
+
+ DOES                                                      FEELS
+     ●    Reviews the interface for both usability and       ●     Practical rather than emotional about the product
+          technical soundness                                      — focused on what will actually work at scale
+     ●    Recommends a concrete, realistic technology        ●     Slightly wary of interfaces that look fine on the
+          stack rather than vague feature wish lists               surface but hide unclear navigation
+
+
+
+
+8. User Stories Derived from Research Findings
+User Story 1: Upfront, Honest Pricing
+Evidence from research:
+    ●    The homeowner ranked budget as a top factor and flagged unclear pricing as a recurring problem.
+    ●    The carpenter noted that customers changing scope mid-job makes pricing harder to hold to.
+    As a homeowner, I want to see a clear, fixed price before I confirm a booking, so that I am not surprised
+    by the final charge.
+
+User Story 2: Instant, Reliable Booking Confirmation
+Evidence from research:
+    ●    The homeowner expected a booking confirmation immediately after submitting a request, and didn't
+         get one.
+    As a homeowner, I want an immediate confirmation once I submit a booking request, so that I know it
+    actually went through.
+10 | P a g e
+User Story 3: A Registration Flow That Actually Works
+Evidence from research:
+    ●   The carpenter's OTP never arrived when he tried to register through the app, forcing him to switch to
+        the website.
+    As a service provider, I want a reliable registration process with a working verification step, so that I'm
+    not blocked from joining the platform on day one.
+
+User Story 4: Verified Reviews and Work History
+Evidence from research:
+    ●   The homeowner wanted more verified reviews and clearer pricing information.
+    ●   The carpenter wanted more visible work history and customer reviews.
+    ●   The developer recommended a booking history page.
+As a homeowner, I want to see verified reviews and past work examples for a provider, so that I can judge
+quality before letting them into my home.
+
+User Story 5: Contracts and Deposits to Protect Both Sides
+Evidence from research:
+    ●   The carpenter suggested a proper contract and a deposit taken before work starts, to guard against
+        scope changes mid-job.
+As a service provider, I want to agree a simple contract and take a deposit before starting a job, so that I'm
+protected if the customer changes the scope of work partway through.
+
+User Story 6: Real-Time Availability and Notifications
+Evidence from research:
+    ●   The homeowner wants live availability.
+    ●   The carpenter wants notifications for new job requests.
+    ●   The developer recommended real-time provider availability and push notifications.
+As a service provider, I want to receive real-time notifications for new job requests, so that I don't miss out on
+work I could take.
+
+User Story 7: A Secure, Well-Built Platform Underneath It All
+Evidence from research:
+    ●   The developer named real-time availability, booking conflicts, and data security as the hardest parts of
+        building this kind of app.
+    ●   He separately called for secure login, encrypted data, and protected payment processing.
+As a platform stakeholder, I want secure login, encrypted data, and protected payment processing built in
+from the start, so that the platform is trustworthy and doesn't fail under real usage.
+
+9. User Journey Map
+9.1 Journey Map: Kasun's Attempt to Register as a Carpenter on Profit.lk
+Scenario: Kasun, an experienced carpenter, hears about Profit.lk and decides to register as a service provider so
+he can find new customers through the platform instead of relying only on referrals. This is a real, observed
+scenario from our interview — not a hypothetical one — and it surfaces the registration and trust pain points
+identified in Section 6.
+
+
+
+11 | P a g e
+                                               Attempting                                        Switching to the
+ Stage                Discovering the App                                Verification Failure
+                                               Registration                                      Website
+                      Downloads the            Enters his mobile                                 Opens the website
+                                                                         Waits for an OTP that
+ Actions              Profit.lk app after      number to register as a                           instead and completes
+                                                                         never arrives
+                      hearing about it         carpenter                                         registration there
+
+                                                                                                 Relieved the website
+                      Curious, open to         Hopeful, expecting a      Confused, then mildly   works, but less
+ Emotions
+                      trying a new platform    quick sign-up             frustrated              confident in the
+                                                                                                 platform overall
+
+                                                                         No error message
+                      No clear indication of   No fallback offered
+                                                                         explaining what went    Had to figure out the
+ Pain Points          what registering         when the OTP doesn't
+                                                                         wrong or what to do     workaround himself
+                      involves                 arrive
+                                                                         next
+
+                                                                         A clear error state
+                                                                                                 A single, consistent
+                      Clear, short                                       with an immediate
+                                               A resend option and a                             registration flow
+                      explanation of the                                 alternative (e.g.
+ Opportunities                                 visible status while                              across app and website
+                      registration steps                                 'having trouble?
+                                               waiting for the OTP                               so switching doesn't
+                      upfront                                            continue on the
+                                                                                                 feel like starting over
+                                                                         website')
+
+
+
+
+10. How Might We (HMW) Statements
+HMW Statement 1
+Grounded in: Both the homeowner and the carpenter flagged pricing uncertainty, and the homeowner never
+received a booking confirmation.
+How might we give homeowners clear pricing and an instant confirmation the moment they book?
+    ●      Mandatory upfront quotes or price ranges per service category
+    ●      Immediate, automated booking confirmation with a visible status
+    ●      Flag or cap price changes made after the provider arrives
+
+
+HMW Statement 2
+Grounded in: The carpenter's app registration failed at the OTP step, forcing him onto the website instead.
+How might we make provider registration reliable enough that a broken verification step never turns
+someone away?
+    ●      A visible resend option and status indicator during OTP verification
+    ●      A same-flow fallback to an alternative verification method
+    ●      Clear, specific error messaging rather than a silent failure
+
+
+HMW Statement 3
+Grounded in: All three interviewees independently asked for stronger reviews and visible work history.
+How might we help homeowners judge a provider's quality before they ever meet them?
+    ●      Verified, timestamped customer reviews
+    ●      A visible work-history / past-projects gallery on each provider profile
+
+12 | P a g e
+      ●   A simple, trustworthy rating system that's hard to game
+
+
+HMW Statement 4
+Grounded in: The carpenter's biggest operational problem was customers changing the scope of work after it
+had started.
+How might we protect service providers when a job's scope changes partway through?
+      ●   A lightweight digital contract agreed before work begins
+      ●   An upfront deposit mechanism
+      ●   A simple, in-app way to log and agree scope changes mid-job
+
+
+HMW Statement 5
+Grounded in: The developer named real-time availability, booking conflicts, and data security as the hardest
+technical problems to solve.
+How might we build a platform that stays fast, available, and secure as real usage grows?
+      ●   Real-time availability and conflict handling built into the booking engine from day one
+      ●   Encrypted data and secure authentication as baseline, non-negotiable requirements
+      ●   PCI-DSS-aligned payment processing with proper access controls
+
+
+
+11. Elucidated User Requirements
+11.1 Functional Requirements
+ ID          Requirement                                                   Evidence
+                                                                           Both interviewees need an account to transact;
+             The platform shall allow homeowners and service
+ FR001                                                                     carpenter's registration attempt is direct
+             providers to create verified accounts.
+                                                                           evidence.
+
+             The platform shall require a reliable OTP/verification step   Carpenter's OTP never arrived; he had to
+ FR002
+             with a resend option and a website fallback.                  switch to the website (US3).
+
+             The platform shall require providers to submit an upfront     Homeowner and carpenter both flagged
+ FR003
+             price or quote before a booking is confirmed.                 pricing as a source of uncertainty (US1).
+
+             The platform shall send an immediate, automated booking       Homeowner expected confirmation
+ FR004
+             confirmation to the homeowner.                                immediately and didn't receive it (US2).
+
+             The platform shall let homeowners view verified reviews       Requested independently by all three
+ FR005
+             and a provider's past work / booking history.                 interviewees (US4).
+
+             The platform shall support a simple digital contract and a    Carpenter's suggested fix for customers
+ FR006
+             deposit before a job begins.                                  changing scope mid-job (US5).
+
+             The platform shall show providers real-time job requests      Requested by homeowner, carpenter, and
+ FR007
+             and send push notifications for new work.                     developer independently (US6).
+
+                                                                           Homeowner found the plumbing category
+             The platform shall display service categories (plumbing,
+ FR008                                                                     quickly on Profit.lk; carpenter found his
+             electrical, carpentry, cleaning, etc.) with filtering.
+                                                                           category quickly too.
+
+             The platform shall support secure, in-app payment with a      Developer named protected payment
+ FR009
+             digital receipt.                                              processing as a core requirement (US7).
+
+
+13 | P a g e
+ ID        Requirement                                                 Evidence
+           The platform shall let homeowners rate and review a         Reviews/ratings were the most consistently
+ FR010
+           provider after job completion.                              requested feature across all three interviews.
+
+
+
+11.2 Non-Functional Requirements
+ ID        Requirement                                                 Evidence / Justification
+           Usability: registration and booking should be completable   Carpenter's OTP failure was a silent failure
+ NFR001
+           without dead ends or silent failures.                       with no fallback offered.
+
+           Performance: booking confirmation should be returned        Homeowner expected an 'immediate'
+ NFR002
+           within a few seconds of submission.                         confirmation.
+
+           Reliability: OTP/verification delivery should be            The exact failure mode the carpenter
+ NFR003
+           monitored, with alerting if delivery rates drop.            experienced.
+
+                                                                       Developer named encrypted data and protected
+ NFR004    Security: payment data encrypted in transit and at rest.
+                                                                       payment processing as core requirements.
+
+                                                                       Developer flagged proper user authentication
+           Security: authentication should follow proper, tested
+ NFR005                                                                as essential; the OTP failure is a concrete
+           practices (not just an OTP with no fallback).
+                                                                       example of this gap.
+
+                                                                       The carpenter had to complete registration on
+           Mobile responsiveness: full functionality on both the app
+ NFR006                                                                the website after the app failed — the two need
+           and the website, in parity.
+                                                                       to be genuinely equivalent.
+
+           Scalability: the booking engine should handle concurrent    Developer named handling booking conflicts
+ NFR007
+           requests without double-booking a provider's time slot.     as one of the hardest technical challenges.
+
+                                                                       Our three interviewees ranged from a casual
+           Accessibility: interface usable by people with a range of
+ NFR008                                                                app user (homeowner) to a developer; the
+           technical comfort levels.
+                                                                       design needs to work for both.
+
+
+12. Time Schedule (Gantt Chart)
+
+
+
+
+14 | P a g e
+Key Milestones
+ Milestone       Target            Deliverable
+ M1              End Week 1        Problem & stakeholders finalized
+
+ M2              End Week 2        Interview scripts finalized
+
+ M3              End Week 3        All three interviews conducted
+
+ M4              End Week 4        Analysis, personas, requirements & report complete
+
+
+13. References
+   ➢ Braun & Clarke (2006) — Foundational text for the thematic analysis methodology used in Section 6
+     of this report.
+
+   ➢ Garrett (2011) — Provides the user-centered design framework that underpins the requirements and
+     user journey mapping sections.
+
+   ➢ Goodwin (2009) — Supports the persona development methodology used in Section 7.
+
+   ➢ Interaction Design Foundation — Standard reference for empathy mapping techniques.
+
+   ➢ Krug (2014) — Justifies the usability testing approach and the live website task methodology.
+
+    ➢ Norman (2013) — Supports the design thinking and HMW statement generation in Section 10.
+15 | P a g e
+    ➢ Profit.lk (2026) — The reference platform used for the live website task in the interviews.
+
+Appendix
+Appendix A: Full Interview Transcript — Homeowner
+
+User 01. Poornima Madubashini : https://drive.google.com/file/d/1d8JHm-
+s8YACXtJKZNMkSRZ83lDSnuHEb/view?usp=sharing
+
+
+
+Part A – Basic Questions
+What types of home services do you usually need?
+Plumber
+
+How often do you hire home service professionals?
+1–2 times
+
+How do you usually find a service provider?
+Ask from friends, search online
+
+What factors do you consider before choosing a service provider?
+Budget, should be available quickly
+
+What challenges have you faced when hiring home service providers?
+Service providers try to do their work quickly but get less attention for the quality of the work
+
+Have you ever booked a home service online before? If yes, which platform did you use?
+Used 'Proflex' — a well-known Australian website
+
+How important are customer ratings and reviews when selecting a service provider?
+Very important. I usually read reviews before deciding because they help me judge the quality of the service.
+
+What information do you expect to see before booking a service?
+I want to see the service provider's experience, pricing, customer ratings, contact details, and availability.
+
+What payment method do you usually prefer for home services?
+I prefer cash after the service is completed, but online payments are also convenient.
+
+If you could improve the current booking process, what would you change?
+I would like to see live availability, fixed pricing, and faster confirmation of bookings.
+
+Part B – Website Questions (Using Profit.lk)
+Was it easy to find the service you were looking for? Why or why not?
+Yes. The categories were easy to understand, so I found the plumbing service without much difficulty.
+
+Did you experience any confusion while navigating the website?
+Not much, but it didn't clearly show the provider's work experience.
+
+Was the information about the service provider sufficient for making a decision?
+Mostly yes. However, I would like to see more verified customer reviews and clearer pricing information.
+
+16 | P a g e
+Was the booking process simple and easy to complete? Explain your experience.
+Yes. The process was straightforward, but I expected to receive a booking confirmation immediately after submitting the request.
+
+What improvements would you suggest for this website?
+I would add live chat support, real-time booking status, clearer pricing, and more detailed customer reviews.
+
+
+
+Appendix B: Full Interview Transcript — Service Provider Company Employee
+(Carpenter)
+
+User 02. Rajeewa Wickramasinghe :
+https://drive.google.com/file/d/1crKT5x9BYvw1jooUyRhEgb3XbhLAgNkf/view?usp=sharing
+
+
+
+Part A – Basic Questions
+What type of carpentry services do you provide?
+Kitchens, bathroom vanities, drawer units — mostly cabinet work.
+
+How long have you been working as a carpenter?
+More than 4 years.
+
+How do you usually get new customers?
+Most customers come through referrals from previous clients, phone calls, and online advertisements.
+
+What information do you need from a customer before accepting a job?
+The most important thing is the budget.
+
+What are the biggest challenges you face in your work?
+Sometimes customers change their requirements after the work has started, and finding enough time to manage multiple jobs can
+be difficult.
+
+How do you manage your appointments and bookings?
+The company has a project manager who manages the appointments and bookings.
+
+What problems do customers commonly report?
+Most of the customers are worrying about the budget.
+
+What features would help you manage your work more efficiently?
+Making a proper plan before starting, and getting a better idea of the human and machine resources required.
+
+How do you usually receive payments?
+Cash, bank transfers, and credit.
+
+What would you like to improve about the current booking process?
+Making a good platform to connect service providers and customers properly, making a good contract before starting the work,
+and taking a deposit before the work starts.
+
+Part B – Website Questions (Using Profit.lk)
+
+Note: The service provider first tried to download the app and register as a carpenter using his mobile
+number, but the OTP was not sent. Because of this, he proceeded to use the website instead.
+17 | P a g e
+Was it easy to find carpentry-related services on the website?
+Yes, the service category was easy to find.
+
+Was the information shown on the website useful?
+Yes, but I think more details about previous work and customer reviews would make it better.
+
+Do you think customers can easily contact a carpenter through this website?
+Yes, the contact details are easy to find.
+
+What difficulties did you experience while using the website?
+I did not face major problems, but some pages had a lot of information, which made it take longer to find what I needed.
+
+What improvements would you suggest for this website?
+I would add online booking, real-time availability, customer reviews with photos, and notifications for new job requests.
+
+
+
+Appendix C: Full Interview Transcript — App Developer
+
+User 03. Mohommed Wazeem : https://drive.google.com/file/d/1nd-
+GOlhhOFLBirnEOVskFpQwD_d3ANcn/view?usp=sharing
+
+
+
+Part A – Basic Questions
+How long have you been developing mobile or web applications?
+About 5 years.
+
+What are the most important factors to consider when developing a home services booking app?
+The app should be easy to use, secure, reliable, and provide a smooth booking experience for both customers and service
+providers.
+
+What features do you think are essential for this type of app?
+User registration, service search, online booking, appointment scheduling, notifications, payment options, and customer reviews.
+
+What are the biggest challenges in developing a booking application?
+Managing real-time availability, handling booking conflicts, ensuring data security, and providing a fast user experience.
+
+How important is the user interface (UI) in a booking application?
+Very important — users should be able to complete their tasks quickly without confusion.
+
+How can user feedback improve an application?
+It helps identify usability issues, missing features, and areas that need improvement.
+
+What security features should be included in a booking app?
+Secure login, encrypted user data, protected payment processing, and proper user authentication.
+
+How can an app ensure a good experience for both customers and service providers?
+By providing simple navigation, fast performance, clear communication, booking updates, and reliable notifications.
+
+What technologies would you recommend for developing this type of application?
+React or Flutter for the frontend, Node.js for the backend, and MongoDB or MySQL for the database.
+
+18 | P a g e
+If you could improve existing home service apps, what would you change?
+I would improve the booking flow, add real-time technician tracking, provide better notifications, and simplify the user interface.
+
+Part B – Website Questions (Using Profit.lk)
+What is your first impression of the website's user interface?
+The interface is clean, but some sections could be organised more clearly to improve navigation.
+
+Was it easy to complete the task of finding a service?
+Yes, but reducing the number of steps would make the process more efficient.
+
+Do you notice any usability issues or design improvements?
+Some buttons and information could be more prominent, and the booking process could be simplified.
+
+What additional features would you recommend for this website?
+Online booking, live chat, push notifications, real-time service provider availability, and a booking history page.
+
+If you were redesigning this website, what would be your top priority?
+I would focus on improving the user experience by simplifying navigation, reducing unnecessary steps, and making the booking
+process faster and more intuitive.
+
+
+
+Appendix D: Affinity Clusters from the Three Interviews
+    ●    Pricing & Trust: "unclear pricing" · budget as the top concern for both homeowner and carpenter ·
+         scope changes mid-job disrupting agreed prices
+    ●    Confirmation & Registration: expected immediate booking confirmation · OTP failure blocking app
+         registration entirely
+    ●    Reviews & Trust Signals: verified reviews requested by the homeowner · work-history photos
+         requested by the carpenter · booking history page recommended by the developer
+    ●    Real-Time & Notifications: live availability · notifications for new job requests · push notifications
+         and real-time provider availability
+    ●    Technical Foundations: secure login and encrypted data · protected payment processing · handling
+         booking conflicts and real-time availability at scale
+
+
+Appendix E: Consent Note
+Each of the three interviews opened with a short explanation of the purpose of the research, that participation
+was voluntary, and that responses would be used only for this coursework. Participants proceeded with the
+interview only after acknowledging this, consistent with the informed-consent principle applied throughout this
+study.
+
+Appendix                      F:                 Primary                      Stakeholder                      Questionnaire
+
+
+Form                                  link:                                 https://forms.gle/ANEhCxXTAizMukU96
+
+
+Responses:
+
+
+
+
+19 | P a g e
+20 | P a g e
+21 | P a g e
+22 | P a g e
+Appendix       F:           Secondary   Stakeholder          Questionnaire
+
+
+Form                link:               https://forms.gle/K5pEBW9Q5pYJtspz6
+
+
+
+
+Responses:
+
+
+
+
+23 | P a g e
+24 | P a g e
+25 | P a g e
+Appendix       G     :     Tertiary     Stakeholder         Questionnaire
+
+
+
+Form               link:              https://forms.gle/7VyrKLYzt4zvXgRM6
+
+
+
+Responses:
+
+
+
+
+26 | P a g e
+27 | P a g e
+28 | P a g e
+

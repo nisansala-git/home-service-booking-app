@@ -4,7 +4,8 @@ class ServiceProvider {
   final String id;
   final String name;
   final String category;
-  final String phone;
+  final String? _phone;
+  String get phone => (_phone != null && _phone!.isNotEmpty) ? _phone! : '077 123 4567';
   final double rating;
   final int reviewCount;
   final int jobsCompleted;
@@ -12,6 +13,7 @@ class ServiceProvider {
   final int experienceYears;
   final double startingPrice;
   final double distanceKm;
+  final bool isAvailableToday;
   final bool isVerified;
   final bool isBackgroundChecked;
   final bool isInsured;
@@ -24,7 +26,7 @@ class ServiceProvider {
     required this.id,
     required this.name,
     required this.category,
-    this.phone = '077 123 4567',
+    String? phone,
     required this.rating,
     required this.reviewCount,
     required this.jobsCompleted,
@@ -32,6 +34,7 @@ class ServiceProvider {
     required this.experienceYears,
     required this.startingPrice,
     required this.distanceKm,
+    this.isAvailableToday = false,
     this.isVerified = true,
     this.isBackgroundChecked = true,
     this.isInsured = true,
@@ -39,14 +42,13 @@ class ServiceProvider {
     required this.about,
     required this.pastWorkImages,
     required this.pricingTable,
-  });
+  }) : _phone = phone;
 
   Map<String, dynamic> toMap() {
-    return {
+    final data = <String, dynamic>{
       'id': id,
       'name': name,
       'category': category,
-      'phone': phone,
       'rating': rating,
       'reviewCount': reviewCount,
       'jobsCompleted': jobsCompleted,
@@ -54,6 +56,7 @@ class ServiceProvider {
       'experienceYears': experienceYears,
       'startingPrice': startingPrice,
       'distanceKm': distanceKm,
+      'isAvailableToday': isAvailableToday,
       'isVerified': isVerified,
       'isBackgroundChecked': isBackgroundChecked,
       'isInsured': isInsured,
@@ -62,6 +65,10 @@ class ServiceProvider {
       'pastWorkImages': pastWorkImages,
       'pricingTable': pricingTable,
     };
+    if (_phone != null && _phone!.isNotEmpty) {
+      data['phone'] = _phone;
+    }
+    return data;
   }
 
   factory ServiceProvider.fromMap(Map<String, dynamic> map, String docId) {
@@ -69,7 +76,7 @@ class ServiceProvider {
       id: docId,
       name: map['name'] ?? '',
       category: map['category'] ?? '',
-      phone: map['phone'] ?? '077 123 4567',
+      phone: map['phone'],
       rating: (map['rating'] ?? 5.0).toDouble(),
       reviewCount: map['reviewCount'] ?? 0,
       jobsCompleted: map['jobsCompleted'] ?? 0,
@@ -77,6 +84,7 @@ class ServiceProvider {
       experienceYears: map['experienceYears'] ?? 1,
       startingPrice: (map['startingPrice'] ?? 1000).toDouble(),
       distanceKm: (map['distanceKm'] ?? 1.5).toDouble(),
+      isAvailableToday: map['isAvailableToday'] ?? false,
       isVerified: map['isVerified'] ?? true,
       isBackgroundChecked: map['isBackgroundChecked'] ?? true,
       isInsured: map['isInsured'] ?? true,
@@ -102,7 +110,8 @@ class Booking {
   final double totalPrice;
   final double depositAmount;
   final double remainingAmount;
-  final String status; // 'confirmed', 'contract_signed', 'deposit_paid', 'in_progress', 'completed', 'cancelled'
+  final String
+      status; // 'confirmed', 'contract_signed', 'deposit_paid', 'in_progress', 'completed', 'cancelled'
   final String address;
   final String notes;
   final bool isContractSigned;
@@ -168,7 +177,8 @@ class Booking {
       providerName: map['providerName'] ?? '',
       serviceCategory: map['serviceCategory'] ?? '',
       serviceItem: map['serviceItem'] ?? '',
-      bookingDate: DateTime.tryParse(map['bookingDate'] ?? '') ?? DateTime.now(),
+      bookingDate:
+          DateTime.tryParse(map['bookingDate'] ?? '') ?? DateTime.now(),
       timeSlot: map['timeSlot'] ?? '',
       totalPrice: (map['totalPrice'] ?? 0).toDouble(),
       depositAmount: (map['depositAmount'] ?? 0).toDouble(),
@@ -241,7 +251,8 @@ class AppNotification {
   final String recipientId;
   final String title;
   final String message;
-  final String type; // 'new_request', 'contract_signed', 'deposit_received', 'job_completed'
+  final String
+      type; // 'new_request', 'contract_signed', 'deposit_received', 'job_completed'
   final String bookingId;
   final DateTime timestamp;
   final bool isRead;

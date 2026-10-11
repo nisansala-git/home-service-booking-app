@@ -1,0 +1,920 @@
+                     Sri Lanka Institute of Information Technology
+                                     Faculty of Computing
+
+
+
+                     IT3060 Human Computer Interaction, Milestone 02
+
+
+                                          Problem Title:
+             Home Service Booking Application (Plumbers, Electricians, Cleaners, etc.)
+
+                                Group Number: KND_HCI_G05
+
+
+
+
+student ID                        name                      workload distribution
+
+
+IT23684980                        Amarasinghe A.A.P.D       Sketches, wireframes, low-fidelity, and
+                                                            high-fidelity prototyping for Home /
+                                                            Service Discovery, Search Results +
+                                                            Filters, Provider Registration Form,
+                                                            and Provider Registration &
+                                                            Verification; Time Schedule (Gantt
+                                                            chart);
+                                                            User testing
+IT23707122                        N.M. Ariyathilake         Sketches, wireframes, low-fidelity, and
+                                                            high-fidelity prototyping for Provider
+                                                            Profile, Availability & Booking, Booking
+                                                            Confirmation, and Digital Contract &
+                                                            Deposit;
+                                                            Recap of user requirements
+                                                            from Milestone 01 (traceability
+                                                            table); References
+IT23710610                        T G C N Karunathilaka     Sketches, wireframes, low-fidelity, and
+                                                            high-fidelity prototyping for Secure
+                                                            Payment & Receipt, Completed Job &
+                                                            Review, and Provider Dashboard / Job
+                                                            Requests
+IT23630802                        M J M Musharaf            Sketches, wireframes, low-fidelity, and
+                                                            high-fidelity prototyping for Provider
+                                                            Notifications & Job Details, My
+                                                                                                   Bookings / Job History, and Job
+                                                                                                   History; User testing
+Individual contributions are visible directly in the Figma file: https://www.figma.com/design/R5hLGZoQA17qz99JdphyHa/IT3060-
+Milestone-02---Home-Service-Booking---KND_HCI_G05?m=auto&t=selFBN0l0SZkcsLh-6. Open the link, then use the "Pages" panel
+on the left to browse Sketches, Wireframes & Low-Fi Prototype, and High-Fi Prototype in turn — each interface is grouped by the
+member who created it.
+
+
+
+
+Table of Contents
+
+
+a. Recap of user requirements from Milestone 01 (traceability table)..........................3
+
+b. Sketches and design variants, with justification..........................................................4
+
+c. Wireframes derived from selectedsketches.................................................................9
+
+d. Low-Fidelity Prototype and How It Was Validated/Refined.........................................14
+
+e. High-fidelity prototype screenshots and interaction flow...........................................14
+
+f. User testing plan (tasks, success criteria, metrics) ................................................... 17
+
+g. Recommendations for further refinement..................................................................... 18
+
+h. Time schedule (Gantt chart) ......................................................................................... ..20
+
+  References ...................................................................................................................... .21
+
+ Appendix .........................................................................................................................22
+
+  Sketches Screenshots ..................................................................................................... 22
+
+  Wireframes .................................................................................................................... 36
+
+  Low-Fidelity Prototype (Figma Link) ........................................................................... 39
+
+  High-Fidelity Prototype Screenshots ............................................................................. 39
+
+  High-Fidelity Prototype (Figma Link) ........................................................................... 41
+
+  User Testing Video Links ............................................................................................... 41
+
+  Interview Scripts (User 01–04) ...................................................................................... 42
+  a. Recap of user requirements from Milestone 01 (traceability
+     table)
+
+Required ID   Requirement (from               Interface(s) it maps to
+              Milestone 01)
+FR001         Verified accounts for           Provider Registration Form,
+              homeowners and providers        Provider Registration & Verification
+FR002         Reliable OTP step with resend   Provider Registration & Verification
+              option
+FR003         Provider must show upfront      Provider Profile,
+              price/quote before booking      Availability & Booking
+              confirmed
+FR004         Immediate, automated            Booking Confirmation
+              booking confirmation
+FR005         Verified reviews + provider's   Provider Profile,
+              past work/booking history       My Bookings / Job History
+FR006         Digital contract + deposit      Digital Contract & Deposit
+              before job starts
+FR007         Real-time job requests + push   Provider Dashboard / Job Requests,
+              notifications for providers     Provider Notifications & Job Details
+FR008         Service categories with         Home / Service Discovery,
+              filtering                       Search Results + Filters
+FR009         Secure in-app payment with      Secure Payment & Receipt
+              digital receipt
+FR010         Homeowner rates/reviews         Completed Job & Review
+              provider after job completion
+NFR001        Usability — no dead             Provider Registration & Verification
+              ends/silent failures
+NFR002        Performance — confirmation      Booking Confirmation
+              within seconds
+NFR003        Reliability — OTP delivery      Provider Registration & Verification
+              monitored
+NFR004        Security — payment data         Secure Payment & Receipt
+              encrypted in transit/at rest
+NFR005        Security — proper               Provider Registration & Verification,
+              authentication practices        Secure Payment & Receipt
+NFR006        Mobile responsiveness / app-      All screens
+              web parity
+NFR007        Scalability — no double-          Availability & Booking
+              booking of time slots
+NFR008        Accessibility — usable across     All screens
+              technical comfort levels
+
+
+
+
+b. Sketches and design variants, with justification (You can see all the
+sketches done by members separately in this link -
+https://www.figma.com/design/R5hLGZoQA17qz99JdphyHa/IT3060-
+Milestone-02---Home-Service-Booking---KND_HCI_G05?node-id=0-1)
+
+
+
+Student     Interface    Variant A                  Variant B
+ID          Name
+            Home /       Pros: Straightforward      Pros: Personalized greeting +
+            Service      for a first-time visitor   location switcher, "Book again"
+            Discovery    — categories are the       section speeds up repeat
+                         very first thing shown,    bookings for regulars.
+                         no dependency on
+                         knowing who's logged
+                         in.                        Cons: Feels a bit empty for a
+                                                    brand-new user with no history,
+                         Cons: No                   more scrolling before
+                         personalization at all,    search/categories appear.
+                         doesn't reward a
+                         returning customer,
+                         no quick-rebook
+                         option.
+
+
+IT2368498                                           Pros: List/Map toggle helps
+0
+                                                    proximity-conscious users, a
+                                                    single "Filters" button with an
+                                                    active-count badge keeps the
+                         Pros: List-only view       header clean.
+                         shows more info per
+                         provider at a glance
+            Search        (rating, distance, price   Cons: 2-column card grid shows
+            Results +     all in one row), simple    less detail per provider, map
+            Filters       linear scan.               view adds real build effort later.
+
+                          Cons: Separate
+                          Price/Rating/Availabil
+                          ity dropdowns crowd
+                          the header row,
+                          especially on a small
+                          screen.                    Pros: Multi-step wizard
+                                                     (Personal info → Service details
+IT2368498                                            → Verification) with a progress
+0                                                    bar gives a clear sense of "almost
+                                                     done," and separates verification
+                                                     into its own dedicated step.
+                          Pros: One continuous
+                          scrolling form, fewer      Cons: More screens and taps
+            Provider
+                          taps overall, no step      overall, higher risk of drop-off
+            Registratio
+                          navigation to manage.      mid-step.
+            n Form
+
+                          Cons: Long form can
+                          feel like a wall of
+                          fields, no sense of
+                          progress, ID upload
+                          sits at the very bottom
+                          where it's easy to skip
+                          past.
+            Provider      Pros: Upfront pricing      Pros: Tabbed
+            Profile       table is the very first    Overview/Photos/Reviews keeps
+                          content block —            the page short, "Verified &
+                          answers the                trusted" checklist (ID verified,
+                          homeowner's #1             background checked, insured)
+                          complaint (unclear         speaks directly to the trust theme
+                          pricing) immediately,      from our interviews, Message
+                          everything visible on      button lets a homeowner ask a
+                          one scroll.                question before booking.
+
+                          Cons: Page gets long,      Cons: Pricing isn't visible until
+                          past work and reviews      "Check availability" is tapped,
+                          end up buried near the     info split across tabs takes extra
+                          bottom.                    taps to review fully.
+
+IT2370712
+2
+
+                                                     Pros: Morning/Afternoon
+                                                     grouping is faster to scan, an
+                                                     explicit note about what happens
+                                                       if two people tap the same slot at
+                                                       once sets expectations upfront
+                           Pros: Single flat list of   (ties directly to our NFR007
+                           time slots, nothing         concern about double-booking).
+                           grouped — simple to
+                           build and read.             Cons: Slightly more visual clutter
+            Availability                               for what is still a short list.
+            & Booking      Cons: Gets harder to
+                           scan once more slots
+                           are added, since
+                           there's no structure.
+                                                       Pros: "What happens next"
+                                                       stepper (Confirmed → Sign
+                                                       contract & pay deposit →
+                                                       Provider arrives) directly
+                                                       answers our research finding
+                                                       that confirmation alone isn't
+                                                       enough, ticket-style card with a
+                                                       barcode feels more like tangible
+                           Pros: Minimal —             proof of booking.
+                           checkmark, summary,
+                           two clear buttons           Cons: More visual design work,
+                           (View details / Back to     only one CTA instead of two
+                           home).                      options.
+
+                        Cons: Doesn't tell the
+                        homeowner anything
+            Booking
+                        is still pending — feels
+            Confirmatio
+                        like an ending rather          Pros: Condensed "Key terms"
+            n
+                        than step one of three,        bullets plus a clear deposit-now /
+                        which doesn't fix the          remaining-after-job split makes
+                        "weak confirmation             the money side obvious at a
+                        moment" problem we             glance, full agreement still
+                        found.                         reachable via a link.
+
+IT2370712                                              Cons: Someone could sign
+2                                                      without ever opening the full
+                                                       terms.
+
+                           Pros: Shows the full
+                           agreement text in one
+                           box — nothing hidden
+                           from the user.
+
+                           Cons: Realistically,
+                           nobody reads a wall of
+                           legal text before
+                           signing, so it doesn't
+                         actually communicate
+                         the deposit math
+                         clearly.
+
+            Digital
+            Contract &
+            Deposit
+IT2371061   Secure       Pros: Linear radio-      Pros: Icon-based method picker
+0           Payment &    button list of payment   (Card/Wallet/Bank) is faster to
+            Receipt      methods, low visual      scan, a saved card speeds up
+                         complexity.              repeat payments, and share icons
+                                                  (email/download/print) support
+                         Cons: No saved-card      an actual real-world need —
+                         shortcut, no way to      keeping a receipt for records.
+                         share the receipt
+                         afterward.               Cons: Icons alone can be a little
+                                                  ambiguous for a first-time user.
+
+
+
+
+                                                  Pros: Splitting the rating into
+                                                  Quality/Punctuality/Professional
+                                                  ism plus quick tags (Great work,
+                                                  On time, etc.) produces genuinely
+                                                  more useful reviews for future
+                         Pros: One overall star   homeowners, optional photos
+IT2371061                rating and a text box    add credibility.
+0
+                         — quick and low-
+                         effort for the           Cons: More fields = more effort,
+            Completed    homeowner.               which may lower how many
+            Job &
+                                                  people actually finish it.
+            Review       Cons: Produces a thin,
+                         generic review, which
+                         doesn't really solve the
+                         "everyone wants real
+                         reviews and work         Pros: A dedicated verification
+                         history" problem we      screen with a step indicator and
+                         identified.              an explicit "Trouble verifying?
+                                                  Continue on website" link
+                                                  directly fixes that real failure
+                                                  from our research (FR002 /
+                                                  NFR001 / NFR003).
+
+                                                  Cons: Adds one more screen to
+                                                  an already multi-step signup.
+
+                         Pros: Keeps OTP entry
+                           inside the same
+                           registration screen, so
+                           the provider isn't
+                           bounced around.
+
+            Provider       Cons: OTP fields get
+            Registratio    buried under a long
+            n&             list of form fields with
+            Verification   no visible fallback —
+            (OTP)          this is essentially the
+                           exact failure our
+                           carpenter interviewee
+                           hit.
+            Provider       Pros: Everything           Pros: One-request-at-a-time card
+            Dashboard      visible at once — new      view forces a clear
+            / Job          requests plus today's      accept/decline decision each
+            Requests       schedule, no extra taps    time, swipe pattern feels familiar
+                           needed.                    from other on-demand apps.
+
+                           Cons: Once several         Cons: Today's confirmed
+                           requests come in, the      schedule isn't visible on the same
+                           list gets long and the     screen anymore.
+                           "Live" banner starts
+                           competing with it for
+                           attention.
+
+                                                      Pros: A proper notification list
+                                                      gives providers a running record
+                                                      of everything that's happened on
+IT2363080                                             a job, matching the real-time-
+2                                                     updates theme from our
+                           Pros: Notification         research.
+                           merges straight into
+            Provider       the relevant job's         Cons: One extra tap between
+            Notification   details — fastest          getting notified and seeing the
+            s & Job        possible path from         job itself.
+            Details        alert to action.
+
+                           Cons: No visible
+                           history of earlier
+                           notifications (contract    Pros: Adding a stats header ("18
+                           signed, deposit            jobs / Rs 32,400 this month")
+                           received, etc.).           plus a calendar strip turns a plain
+                                                      list into something genuinely
+                                                      useful, echoing the developer's
+                                                      "booking history page"
+                                                      suggestion.
+
+                                                      Cons: Extra widgets push the
+                           Pros: Simple — just      actual bookings further down the
+                           the list of bookings,    screen.
+                           nothing else
+                           competing for space.     Pros: History is just one tab
+                                                    away, no extra fields, matches
+             My            Cons: Gives the          how most people would expect a
+             Bookings /    provider zero sense of   small booking history to work.
+             Job History   how their month is
+                           going.                   Cons: No filtering at all —
+                                                    becomes painful once the list
+                                                    grows.
+
+
+
+                           Pros: Full search
+                           screen — filter by
+                           date, status, service
+                           type, or customer
+ IT2363080                 name. Powerful for
+ 2                         someone with a long
+                           history.
+             Job History
+                           Cons: A lot of setup
+                           (four fields) just to
+                           look at past jobs —
+                           overkill early on.
+
+
+
+
+c. Wireframes derived from selected sketches (You can see all the
+Wireframes done by members separately in this link -
+https://www.figma.com/design/R5hLGZoQA17qz99JdphyHa/IT3060-
+Milestone-02---Home-Service-Booking---KND_HCI_G05?node-id=1-2)
+
+1. Home / Service Discovery — Selected: Variant A
+
+Justification: We went with the category-grid version because our own homeowner
+interviewee found her plumbing category "without much difficulty" using this exact
+layout style on Profit.lk — it's a proven pattern for first-time discovery, and most
+homeowners in our survey said they book only 1–2 times a year, so personalization
+for a "returning user" mattered less than we first thought.
+
+Structure (top to bottom): App header + registration CTA → search bar → quick
+filter chips (Top rated / Nearby / Available today) → "Browse by category" grid →
+promo banner → "Providers near you" list → bottom nav.
+
+
+
+
+2. Search Results + Filters — Selected: Variant A
+
+Justification: The flat list with individual filter buttons (Price, Rating, Availability,
+Distance) won out because it keeps every relevant detail — rating, distance, price,
+verified badge — visible in a single row, which matters directly for Theme 4 from
+our research (everyone wants visible trust signals without extra taps).
+
+Structure: Back + search bar → filter button row → result count + sort → provider
+cards (name, category, rating, distance, badges, price, View button) → bottom
+nav.
+
+
+
+
+3. Provider Registration Form — Selected: Variant A
+
+Justification: We kept the single continuous form rather than the multi-step
+wizard because our carpenter interviewee already struggled at just the verification
+step; adding more discrete steps before he even reaches verification risked more
+places for him to abandon the flow.
+
+Structure: Back + title → Full name, Phone, Email, Password, Confirm password
+fields → Service category dropdown → Service area field → Upload
+ID/certification → terms checkbox → Create account button.
+
+
+
+
+4. Provider Registration & Verification — Selected: Variant B
+
+Justification: This is the direct fix for Theme 3 in our findings — the carpenter's
+OTP never arrived and he had no idea what to do next. Giving verification its own
+screen with a step indicator and a visible "Trouble verifying by SMS? Continue
+verification on website" link is our answer to that exact failure (FR002, NFR001,
+NFR003).
+
+Structure: Back + step indicator (Info → Verify → Details) → "Verify your number"
+heading → 6-digit code input → delivery-monitoring note → error state ("Incorrect
+code, 2 attempts left") → resend timer → website fallback link → Continue
+button.
+5. Provider Profile — Selected: Variant A
+
+Justification: Putting the upfront pricing table as the very first content block
+responds directly to our homeowner's complaint about unclear pricing (Theme 1) —
+she shouldn't have to tap into a separate tab to see what something costs.
+
+Structure: Cover photo + provider name/rating/verified badge → Upfront pricing
+table → About → Past work gallery → Booking history stats (jobs completed / on-
+time % / years) → Verified reviews → sticky "From Rs X / Check availability"
+footer.
+
+
+
+
+6. Availability & Booking — Selected: Variant B
+
+Justification: The Morning/Afternoon grouping is simply easier to scan once the
+slot list grows, and the explicit note about what happens if two people tap the
+same slot ties straight back to NFR007 — our developer's concern about handling
+booking conflicts at scale.
+
+Structure: Back + date strip (Mon–Sun) → Morning slots → Afternoon slots →
+conflict-handling note → sticky footer with service summary, price, and Book Now
+button.
+
+
+
+
+7. Booking Confirmation — Selected: Variant B
+
+Justification: A checkmark alone doesn't fix Theme 2 — our homeowner expected
+confirmation but felt the process still ended on uncertainty. The "What happens
+next" stepper (Confirmed → Sign contract & pay deposit → Provider arrives) turns
+confirmation into the start of a visible process rather than a dead end.
+
+Structure: Confirmed badge + heading → ticket-style summary card (provider,
+service, price, date/time, location, booking ID + barcode) → "What happens next"
+progress stepper → Done button.
+8. Digital Contract & Deposit — Selected: Variant B
+
+Justification: Condensing the agreement into scannable Key terms bullets, with a
+clear Deposit-due-now vs. Remaining-after-job split, is what actually
+communicates the numbers our carpenter asked for — a full legal wall of text
+(Variant A) doesn't get read.
+
+Structure: Back + "Confirm & agree" heading → Key terms bullet list → "Read full
+agreement" link → deposit/remaining split bar → signature pad → agreement
+checkbox → "Accept & pay [amount] deposit" button.
+
+
+
+
+9. Secure Payment & Receipt — Selected: Variant B
+
+Justification: The icon-based method picker plus a saved card speeds up a return
+payment, and the share-receipt icons (email/download/print) reflect a real,
+practical need — keeping proof of payment for later — that a plain download link
+doesn't fully cover.
+
+Structure: Back + "Payment" heading + encryption note → payment method icons
+(Card/Wallet/Bank) → saved card row → amount due + "Pay securely" button →
+Digital receipt card (service, payment method, deposit paid, share icons) → Done
+button.
+
+
+
+
+10. Completed Job & Review — Selected: Variant A
+
+Justification: We chose the single overall star rating with an optional text box over
+the more granular Quality/Punctuality/Professionalism split, since keeping this
+step low-effort matters more than the extra data — a review a homeowner actually
+finishes is more useful than a detailed one they abandon halfway.
+
+Structure: Back + "Job completed" checkmark → job summary → 5-star rating →
+optional review text box → Submit review button → "Skip for now" link → trust
+note about reviews being public/verified.
+11. Provider Dashboard / Job Requests — Selected: Variant A
+
+Justification: Showing all new requests plus today's confirmed schedule on one
+screen means Kamal doesn't lose visibility of jobs he's already committed to while
+deciding on new ones — the swipe-one-at-a-time alternative hid that schedule
+entirely.
+
+Structure: Greeting + Online toggle → "New requests" list with Accept/Decline per
+card → "Today's schedule" list → bottom nav (Requests/Bookings/Profile).
+
+
+
+
+12. Provider Notifications & Job Details — Selected: Variant B
+Justification: A running notification list (new request, contract signed, deposit
+received) gives the provider a record of everything that's happened on a job — this
+maps directly to our Theme 5 finding that providers specifically wanted
+notifications for job-related updates, not just the newest one.
+
+Structure: "Notifications" heading → chronological notification list (newest
+highlighted) → "Job details" card → job status progress list (Request accepted →
+Contract signed → Deposit received → Job in progress) → Get directions / Message
+customer buttons.
+
+
+
+
+13. My Bookings / Job History — Selected: Variant A
+
+Justification: We kept this to a plain tabbed list rather than adding the
+earnings/stats header — for a homeowner-facing bookings screen specifically,
+seeing your own bookings clearly mattered more than monthly stats, which is
+really a provider-side need.
+
+Structure: Heading + My Bookings/Job History tabs → booking cards with status
+badge (Confirmed/Completed/Awaiting deposit), provider, date, price → bottom
+nav.
+
+14. Job History — Selected: Variant B
+
+Justification: We dropped the four-field search form (date range, status, service
+type, customer name) since a small job history doesn't need it yet — going straight
+from tab to completed-jobs list matches how a provider would actually expect to
+check recent work, without extra setup first.
+Structure: Heading → My Bookings/Job History tabs → completed job cards
+(customer, date, rating given, price, status) → bottom nav.
+
+
+
+
+d. Low-Fidelity Prototype and How It Was Validated/Refined
+
+We linked our selected wireframes into two clickable Figma prototypes covering
+the full homeowner and provider flows, using native frame-to-frame connections.
+Validation was done by checking each screen against the FR/NFR list from
+Milestone 01 as we built it, rather than after the fact — confirming every
+requirement had a dedicated interface. This is why screens like Provider
+Registration & Verification (FR002/NFR001/NFR003) and Digital Contract & Deposit
+(FR006) exist separately rather than being merged into other screens, since each
+addresses a specific pain point from our interviews. Coverage was complete by the
+end of this stage, so the flow needed no major restructuring — all 14 interfaces
+map cleanly to the requirements (see traceability table, Section a). Formal
+usability validation with real users was carried out later, after the high-fidelity
+prototype was built (Section f/g).
+
+
+
+
+e. High-fidelity prototype screenshots and interaction flow
+
+Tool used: Figma, chosen for its native prototyping (frame-to-frame click connections,
+overlays, and component variants), which let us build both the homeowner and
+provider flows as fully interactive, shareable prototypes without exporting to a separate
+tool. Figma's free tier and multi-user editing also suited our four-person group working
+in parallel.
+
+High-Fidelity Prototype Screenshots (click here)
+
+Homeowner interaction flow:
+Home / Service Discovery → Search Results + Filters → Provider Profile → Availability &
+Booking → Booking Confirmation → Digital Contract & Deposit → Secure Payment &
+Receipt → Completed Job & Review → Secure Payment & Receipt → ...
+Provider interaction flow:
+Provider Registration Form → Provider Registration & Verification → Provider
+Dashboard / Job Requests → Provider Notifications & Job Details → My Bookings / Job
+History → Job History → My Bookings / Job History → ...
+f. User testing plan (tasks, success criteria, metrics)
+
+Method: Moderated remote testing conducted individually with each participant. Every
+participant shared their screen while completing a task on the Figma high-fidelity
+prototype, thinking aloud as they navigated. Sessions were observed live and recorded
+(See here)
+
+Participants: 4 real users tested to date — 2 completed the homeowner booking flow, 1
+(Sulani) completed a plumbing-specific search-and-book flow, and 1 completed the
+service provider registration and job history flow, together covering both stakeholder
+tiers identified in Milestone 01.
+
+ Task           Path                                 Requirement(s) Participants
+                                                     tested
+ Book a         Search → View provider → Check       FR003, FR004,  User 01, 02
+ service end-   availability → Book Now → Accept     FR006, FR008,
+ to-end         & pay deposit → Submit review        FR009, FR010,
+                                                     NFR004
+ Find and       Home → Search → View provider        FR008, FR003,  User 03
+ book a         → Book                               FR004
+ plumber
+ under time
+ pressure
+ Register as a   Create account → Continue →           FR001, FR002,      User 04
+ provider and    Notifications → Get directions →      FR005, FR007
+ check job       Job history
+ history
+
+
+
+Success Criteria: Participant completes the assigned task unaided, correctly interprets
+pricing, contract, and booking details without help, and can describe what happens next
+without prompting.
+
+Metrics captured: Task success (completed / completed with confusion / failed),
+specific points of hesitation or confusion, and qualitative feedback gathered through
+post-task questions on clarity, trust, and missing features.
+
+Task outcomes:
+
+   •   User 01/02: Completed, with minor confusion at the contract/deposit step.
+   •   User 03: Completed with no confusion.
+   •   User 04: Completed, with minor confusion locating job history initially.
+
+
+
+
+g. Recommendations for further refinement
+
+
+
+ Issue                               Raised by      Severity        Recommendation
+ Unsure whether the deposit was      User 01/02     Medium          State refundability
+ refundable on the Contract page                                    explicitly next to
+                                                                    the deposit
+                                                                    amount, not only
+                                                                    inside the full
+                                                                    agreement text
+
+ No estimated arrival time or way    User 01/02     Medium          Add an estimated
+ to contact the provider shown                                      arrival window
+ after booking                                                      and a "Message
+                                                                    provider" action to
+                                                                    the Booking
+                                                                    Confirmation or
+                                                                    Provider
+                                                                    Notifications
+                                                                    screen
+ Contract page felt long            User 01/02    Low            Keep the
+                                                                 condensed "Key
+                                                                 terms" bullets as
+                                                                 the default view;
+                                                                 de-emphasize the
+                                                                 full-agreement link
+                                                                 further
+
+ Search bar placeholder text        User 03       Low            Simplify to a
+ ("leaking tap or Kamal Perera")                                 plainer prompt,
+ was unclear                                                     e.g. "Search for a
+                                                                 service"
+ Initially unsure where to find     User 04       Medium         Make the
+ previous bookings                                               "Bookings/Job
+                                                                 History" tab more
+                                                                 visually prominent
+                                                                 in the bottom
+                                                                 navigation
+ No provider contact details        User 04       Low            Add a call/message
+ visible from job history                                        shortcut on each
+                                                                 job history entry
+ No option to rebook the same       User 04       Low            Add a "Book again"
+ service from job history                                        action to
+                                                                 completed job
+                                                                 history entries
+ No filtering by status         User 04           Low            Add status filter
+ (completed/cancelled/upcoming)                                  tabs to the Job
+                                                                 History screen
+
+What worked well: All four participants found core discovery and browsing easy —
+User 01/02 called finding a provider straightforward, User 03 said the app "felt like
+a normal app I would actually use," and User 04 found reviewing past bookings in
+one place easy once located. Visible upfront pricing paired with reviews on the
+Provider Profile screen was specifically called out as building trust, and the visual
+design (color palette, text size, promotional banner) was well received by User 03
+— supporting the design decisions made in Sections (b)–(c) and (e).
+
+Limitation: Testing was completed with 4 of the 5 participants required by the
+assignment. Findings above reflect real, consistent feedback across both
+stakeholder tiers, but a fifth session is recommended to fully satisfy the
+assignment's testing requirement.
+h. Time schedule (Gantt chart)
+References
+•   Buxton, B. (2007) — Foundational text on sketching and low-fidelity ideation
+    techniques used in Section (b)–(c) of this report.
+•   Snyder, C. (2003) — Supports the wireframing and low-to-high fidelity
+    prototyping progression used in Sections (c)–(e).
+•   Nielsen, J. (1994) — Basis for the usability heuristics applied when evaluating
+    design variants in Section (b) and refining the prototype in Section (d).
+•   Rubin, J. & Chisnell, D. (2008) — Reference for the user testing methodology,
+    task design, and success-criteria structure used in Section (f).
+•   Krug, S. (2014) — Justifies the "don't make me think" approach to navigation and
+    task flow reflected across the high-fidelity screens in Section (e).
+•   Norman, D. (2013) — Supports the interaction design decisions and
+    feedback/confirmation patterns (e.g. booking confirmation, notifications) used
+    throughout the prototype.
+•   Figma, Inc. (2026) — The prototyping tool used to build and link the low- and
+    high-fidelity prototypes referenced in Sections (c)–(e).
+
+
+
+
+    Appendix
+
+    Sketches Screenshots:
+Wireframes:
+Low-Fidelity Prototype (Figma Link)
+
+Link: https://www.figma.com/design/R5hLGZoQA17qz99JdphyHa/IT3060-Milestone-
+02---Home-Service-Booking---KND_HCI_G05?node-id=1-2
+
+Instructions to view:
+   1. Open the link above.
+   2. Click the Preview button (top-right) to interact with the prototype and navigate
+      through the screens as a user would.
+   3. To view the connections between screens instead, switch to the Prototype tab in
+      the left panel — this shows the flow with arrows linking each frame.
+
+
+
+High Fidelity Prototype Screenshots:
+High-Fidelity Prototype (Figma Link)
+
+ Link: https://www.figma.com/design/R5hLGZoQA17qz99JdphyHa/IT3060-Milestone-
+02---Home-Service-Booking---KND_HCI_G05?node-id=1-3
+
+Instructions to view:
+
+   1. Open the link above.
+   2. Click the Preview button (top-right) to interact with the prototype and
+      navigate through the screens as a real user would.
+   3. To view the connections between screens instead, switch to the Prototype
+      tab in the left panel — this shows the flow with arrows linking each frame.
+
+
+
+User Testing Video Links:
+
+User 01:
+https://drive.google.com/drive/folders/1vkuWq_qBEmebe2OVNcnuVcg4S1gSq9Y7
+?usp=sharing
+
+User 02:
+https://drive.google.com/drive/folders/1cYICZUNmPBc5ln0nmYTjdnZfueCT6TwX?
+usp=sharing
+
+User 03:
+https://mysliit-
+my.sharepoint.com/:v:/g/personal/it23684980_my_sliit_lk/IQAkLZIP1rtZTq59Yn9A
+qn9FAYCu_0DiZ26n-EMBalb-
+Ovg?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ
+1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI
+6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=5ahK4s
+
+
+
+
+Interview Scripts:
+
+User 01 and 02:
+
+Introduction:
+
+"Hi, thank you for joining. Today I'm testing a prototype of a home service booking
+app. I'm testing the design, not you. Please think out loud while you use it. There
+are no right or wrong answers."
+
+Task given:
+
+"Imagine you need a service. Please use this prototype to book one from start to
+finish."
+
+Task path followed: Search → View provider → Check availability → Book Now →
+Done → Accept & pay Rs 300 deposit → Done → Submit review
+
+Task outcome: Completed, with minor confusion at the contract/deposit step.
+
+
+Post-task Questions and Answers:
+Question: Was anything confusing while booking the service?
+
+Answer: "Yes, I got a bit confused on the Contract page. I wasn't sure if the deposit
+was refundable."
+
+Question: What was the easiest part for you?
+
+Answer: "Searching and seeing the list of cleaners was easy."
+
+Question: Did you feel the price and contract information were clear and
+trustworthy?
+
+Answer: "The price was clear on the profile, but the contract felt a bit long. I trust
+it more after seeing reviews."
+
+Question: Is there anything missing that you expected to see?
+
+Answer: "I expected to see estimated arrival time or how to contact the cleaner
+after booking."
+
+
+
+
+User 03:
+
+
+
+Introduction:
+"Hi Sulani, thanks for helping me out today. As I mentioned, this is for my Human-
+Computer Interaction (HCI) module assignment. We are designing a home service
+booking app. Before we start, is it okay if I record the audio so I can review your
+feedback later? I'm going to share a clickable Figma prototype with you — please
+share your screen so I can see where you click and how you navigate."
+
+Task given:
+"Imagine you have a leaking tap at home and you need to get it fixed immediately.
+Please use this app to find and book a plumber."
+
+Post-task Questions and Answers:
+
+Question: Now, just tell me your honest thoughts.
+Answer: "Honestly, it was easy to use. I didn't get lost or confused. It felt like a
+normal app I would actually use on my phone."
+Question: What did you like about the app, and what did you dislike? Feel free to
+comment on anything — the layout, the colors, the text, or how it felt to use.
+Answer: "The colors are really nice. The green and cream look calm and clean, not
+too bright or busy. The text was big enough to read easily. I didn't have to zoom in.
+The 'First job on us' discount banner caught my eye immediately. That's smart."
+
+Question: If you could change one thing about this app to make it better for you,
+what would it be?
+Answer: "I'd change the search bar text. Instead of 'leaking tap or Kamal Perera',
+just say 'Search for a service' or 'What do you need help with?' It would be much
+clearer."
+
+
+
+
+User 04:
+
+
+
+
+Task given:
+"Imagine you are a service provider using this app. Please register as a provider and
+check your booking/job history."
+
+Task path followed: Create account → Continue → Check notifications (bell icon)
+→ Get directions → View job history
+
+Post-task Questions and Answers:
+
+Question: Was anything confusing while viewing your booking history?
+Answer: "Yes, I was slightly confused about where to find my previous bookings at
+first."
+
+Question: What was the easiest part for you?
+Answer: "The easiest part was seeing all my previous services in one place and
+selecting a booking to view its details."
+
+Question: Were the booking details, such as service, date, time, price, and status,
+clear?
+Answer: "The service name, date, time, and price were clear. The booking status
+was also easy to understand."
+
+Question: Is there anything missing that you expected to see in the booking
+history?
+Answer: "I expected to see the service provider's contact details and an option to
+book the same service again. It would also be useful to have filters for completed,
+cancelled, and upcoming bookings."
+
