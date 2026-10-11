@@ -41,25 +41,36 @@ void main() {
       expect(find.text('Card'), findsOneWidget);
       expect(find.text('Wallet'), findsOneWidget);
       expect(find.text('Bank'), findsOneWidget);
-      expect(find.text('Rs 300'), findsOneWidget);
+      expect(find.text('Rs 300'), findsWidgets);
       expect(find.text('Pay securely'), findsOneWidget);
 
       // Tap Wallet method
       await tester.tap(find.text('Wallet'));
       await tester.pumpAndSettle();
-      expect(find.text('FriMi / Genie • • • • 9102'), findsOneWidget);
+      expect(find.text('FriMi'), findsOneWidget);
 
       // Tap Bank method
       await tester.tap(find.text('Bank'));
       await tester.pumpAndSettle();
-      expect(find.text('Commercial Bank • • • • 7741'), findsOneWidget);
+      expect(find.text('Commercial Bank of Ceylon'), findsOneWidget);
 
       // Tap Card method again
       await tester.tap(find.text('Card'));
       await tester.pumpAndSettle();
-      expect(find.text('Visa • • • • 4417'), findsOneWidget);
+      expect(find.text('Card Number'), findsOneWidget);
+
+      // Enter card details for validation
+      final textFields = find.byType(TextField);
+      await tester.enterText(textFields.at(0), 'Poornima Madubashini');
+      await tester.enterText(textFields.at(1), '4417');
+      await tester.enterText(textFields.at(2), '1234');
+      await tester.enterText(textFields.at(3), '5678');
+      await tester.enterText(textFields.at(4), '9012');
+      await tester.enterText(textFields.at(5), '123');
+      await tester.pumpAndSettle();
 
       // Process payment
+      await tester.ensureVisible(find.text('Pay securely'));
       await tester.tap(find.text('Pay securely'));
       await tester.pump();
       // Wait for delayed simulation

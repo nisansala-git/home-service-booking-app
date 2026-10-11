@@ -5,7 +5,7 @@ class ServiceProvider {
   final String name;
   final String category;
   final String? _phone;
-  String get phone => (_phone != null && _phone!.isNotEmpty) ? _phone! : '077 123 4567';
+  String get phone => (_phone != null && _phone.isNotEmpty) ? _phone : '077 123 4567';
   final double rating;
   final int reviewCount;
   final int jobsCompleted;
@@ -65,7 +65,7 @@ class ServiceProvider {
       'pastWorkImages': pastWorkImages,
       'pricingTable': pricingTable,
     };
-    if (_phone != null && _phone!.isNotEmpty) {
+    if (_phone != null && _phone.isNotEmpty) {
       data['phone'] = _phone;
     }
     return data;
