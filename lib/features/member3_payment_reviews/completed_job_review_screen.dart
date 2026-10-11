@@ -58,6 +58,30 @@ class _CompletedJobReviewScreenState extends State<CompletedJobReviewScreen> {
       return;
     }
 
+    // Validation: if user writes a review, ensure it's at least 5 characters
+    final enteredText = _reviewController.text.trim();
+    if (enteredText.isNotEmpty && enteredText.length < 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          content: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'කරුණාකර අවම වශයෙන් අකුරු 5 කින් යුත් අදහසක් ලියන්න (Please enter at least 5 characters)',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSubmitting = true);
 
     // Simulate network latency / database write
@@ -169,7 +193,7 @@ class _CompletedJobReviewScreenState extends State<CompletedJobReviewScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF286A4F).withOpacity(0.28),
+                    color: const Color(0xFF286A4F).withValues(alpha: 0.28),
                     blurRadius: 18,
                     offset: const Offset(0, 6),
                   ),
@@ -263,11 +287,11 @@ class _CompletedJobReviewScreenState extends State<CompletedJobReviewScreen> {
             const SizedBox(height: 28),
 
             // "Write a review (optional)" input section
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Write a review (optional)',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -283,7 +307,7 @@ class _CompletedJobReviewScreenState extends State<CompletedJobReviewScreen> {
                 border: Border.all(color: const Color(0xFFE5E7EB)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.015),
+                    color: Colors.black.withValues(alpha: 0.015),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
