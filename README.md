@@ -114,14 +114,16 @@ home-service-booking-app/
 ## 🚀 6. Setup & Running Instructions
 
 ### Prerequisites
-1. **Flutter SDK**: Version `3.24.0` or higher (`brew install --cask flutter` on macOS or download from [flutter.dev](https://flutter.dev)).
-2. **Git**: Installed and configured.
-3. An Android Emulator, iOS Simulator, or Chrome browser.
+1. **Flutter SDK**: Version `3.47.6` (stable) with Dart `3.13.5`, or a compatible version. Download from [flutter.dev](https://flutter.dev).
+2. **Android Studio** with Android SDK 36 and **NDK 28.2.13676358** (SDK Manager > SDK Tools > show package details). Accept the licenses and run `flutter doctor` until the Android toolchain has a green tick.
+3. **JDK 17**.
+4. **Git**: Installed and configured.
+5. An Android phone or Android emulator.
 
 ### Clone and Run
 ```bash
 # 1. Clone the repository
-git clone https://github.com/<YOUR_ORGANIZATION_OR_USERNAME>/home-service-booking-app.git
+git clone https://github.com/nisansala-git/home-service-booking-app.git
 
 # 2. Navigate to project root
 cd home-service-booking-app
@@ -129,11 +131,26 @@ cd home-service-booking-app
 # 3. Fetch dependencies
 flutter pub get
 
-# 4. Run the application
-flutter run
-# Or run on Chrome for quick evaluation:
-# flutter run -d chrome
+# 4. Check that the emulator or phone is detected
+flutter devices
+
+# 5. Run the application
+flutter run -d <device-id>
 ```
+
+The Firebase configuration (`lib/firebase_options.dart`) is already included, so no extra Firebase setup is needed. The app needs an internet connection to reach Cloud Firestore.
+
+### Build the installable APK
+```bash
+flutter build apk --release
+```
+The file is created at `build/app/outputs/flutter-apk/app-release.apk`. Copy it to an Android phone and open it to install. If the phone asks, allow "Install from this source".
+
+**Installable build (Google Drive):** ADD-YOUR-LINK-HERE
+
+### Notes
+- The Firestore database was created in test mode, so its rules are open and expire 30 days after creation. This is acceptable for a coursework demo, but real security rules are needed for production use.
+- The Android package ID is `com.knd.hci.home_service_booking_app`.
 
 ---
 
