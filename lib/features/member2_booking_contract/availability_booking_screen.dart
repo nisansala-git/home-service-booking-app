@@ -183,6 +183,17 @@ class _AvailabilityBookingScreenState extends State<AvailabilityBookingScreen> {
       return;
     }
 
+    // NFR007: Final conflict check at submission time to prevent double-booking
+    if (_appState.isSlotBooked(widget.provider.id, _selectedDate, _selectedSlot)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This slot was just booked by another user. Please pick a different time.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     if (_addressController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter service address.')),
@@ -565,59 +576,102 @@ class _AvailabilityBookingScreenState extends State<AvailabilityBookingScreen> {
 
   Widget _buildSlotCard(String slot, String badge) {
     final isSelected = _selectedSlot == slot;
+    final mySlotKey = '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}_$_selectedSlot';
+    final isBooked = _appState.isSlotBooked(widget.provider.id, _selectedDate, slot);
+    final isLockedByOther = _appState.isSlotUnavailable(
+      widget.provider.id, _selectedDate, slot,
+      currentUserSlotKey: mySlotKey,
+    );
+    final isDisabled = isBooked || isLockedByOther;
+
+    final String displayBadge = isBooked
+        ? 'Booked'
+        : (isLockedByOther ? 'Reserved' : badge);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: InkWell(
-        onTap: () => _onSlotSelected(slot),
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.accentLight : AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected ? AppColors.accent : AppColors.cardBorder,
-              width: isSelected ? 1.5 : 1,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                    size: 18,
-                    color: isSelected ? AppColors.primaryDark : AppColors.textSecondary,
+        onTap: isDisabled
+            ? () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      isBooked
+                          ? 'This slot is already booked. Please choose another time.'
+                          : 'This slot is temporarily reserved by another user.',
+                    ),
+                    backgroundColor: AppColors.error,
+                    duration: const Duration(seconds: 2),
                   ),
-                  const SizedBox(width: 10),
-                  Text(
-                    slot,
+                );
+              }
+            : () => _onSlotSelected(slot),
+        borderRadius: BorderRadius.circular(12),
+        child: Opacity(
+          opacity: isDisabled ? 0.45 : 1.0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: isDisabled
+                  ? const Color(0xFFFEF2F2)
+                  : (isSelected ? AppColors.accentLight : AppColors.surface),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isDisabled
+                    ? const Color(0xFFFCA5A5)
+                    : (isSelected ? AppColors.accent : AppColors.cardBorder),
+                width: isSelected ? 1.5 : 1,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      isDisabled
+                          ? Icons.block
+                          : (isSelected ? Icons.radio_button_checked : Icons.radio_button_off),
+                      size: 18,
+                      color: isDisabled
+                          ? AppColors.error
+                          : (isSelected ? AppColors.primaryDark : AppColors.textSecondary),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      slot,
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isDisabled
+                            ? AppColors.textSecondary
+                            : (isSelected ? AppColors.primaryDark : AppColors.textPrimary),
+                        fontSize: 13,
+                        decoration: isDisabled ? TextDecoration.lineThrough : null,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isDisabled
+                        ? const Color(0xFFFEE2E2)
+                        : (isSelected ? AppColors.accent : AppColors.surfaceMuted),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    displayBadge,
                     style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isSelected ? AppColors.primaryDark : AppColors.textPrimary,
-                      fontSize: 13,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: isDisabled
+                          ? AppColors.error
+                          : (isSelected ? AppColors.primaryDark : AppColors.textSecondary),
                     ),
                   ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.accent : AppColors.surfaceMuted,
-                  borderRadius: BorderRadius.circular(6),
                 ),
-                child: Text(
-                  badge,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: isSelected ? AppColors.primaryDark : AppColors.textSecondary,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

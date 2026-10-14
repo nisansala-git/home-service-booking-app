@@ -110,6 +110,15 @@ class FirestoreService {
     return snap.docs.map((d) => ChatMessage.fromMap(d.data(), d.id)).toList();
   }
 
+  /// Real-time stream of all chat messages for live multi-user sync
+  Stream<List<ChatMessage>> watchChatMessages() {
+    return _chatMessages
+        .orderBy('timestamp', descending: false)
+        .snapshots()
+        .map((snap) =>
+            snap.docs.map((d) => ChatMessage.fromMap(d.data(), d.id)).toList());
+  }
+
   // ---------------------------------------------------------------------------
   // PROVIDERS CRUD
   // ---------------------------------------------------------------------------

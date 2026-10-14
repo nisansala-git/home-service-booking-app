@@ -43,7 +43,7 @@ class MockData {
       id: 'prov_nadesha',
       name: 'Nadesha Silva',
       category: 'cleaning',
-      phone: '071 456 7890',
+      phone: '076 034 4720',
       rating: 4.9,
       reviewCount: 68,
       jobsCompleted: 340,
@@ -55,6 +55,33 @@ class MockData {
           'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
       about:
           'Professional home & deep cleaning specialist. Equipped with eco-friendly sanitizing tools, verified background check, and trusted by hundreds of homeowners.',
+      pastWorkImages: [
+        'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400',
+        'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=400',
+      ],
+      pricingTable: [
+        {'item': 'Deep Kitchen Cleaning', 'price': 3500.0, 'unit': 'standard'},
+        {'item': 'Bathroom Sanitization', 'price': 2000.0, 'unit': 'per bath'},
+        {'item': 'Full House Deep Clean', 'price': 8500.0, 'unit': '2-3 rooms'},
+      ],
+    ),
+    ServiceProvider(
+      id: 'prov_nisansala',
+      isAvailableToday: true,
+      name: 'Nisansala Ariyathilake',
+      category: 'cleaning',
+      phone: '076 034 4720',
+      rating: 5.0,
+      reviewCount: 48,
+      jobsCompleted: 185,
+      onTimePercentage: 100,
+      experienceYears: 5,
+      startingPrice: 2000.0,
+      distanceKm: 1.2,
+      imageUrl:
+          'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
+      about:
+          'Verified professional home & deep cleaning specialist. Equipped with modern sanitization equipment, 100% on-time record, and direct live support.',
       pastWorkImages: [
         'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400',
         'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=400',

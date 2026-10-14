@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/app_state_service.dart';
+import '../member2_booking_contract/provider_chat_screen.dart';
 import '../member4_notifications_history/provider_notifications_screen.dart';
 
 /// Representation of an incoming live job request
@@ -285,44 +286,65 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                                 }
                               },
                             ),
-                            Stack(
-                              alignment: Alignment.center,
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 _buildCircularHeaderButton(
-                                  icon: Icons.notifications_none,
+                                  icon: Icons.chat_bubble_outline,
                                   onTap: () {
+                                    final prov = _appState.providers.firstWhere(
+                                      (p) => p.id == 'prov_nisansala' || p.id == 'prov_nadesha',
+                                      orElse: () => _appState.providers.first,
+                                    );
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) =>
-                                            const ProviderNotificationsScreen(),
+                                        builder: (_) => ProviderChatScreen(provider: prov),
                                       ),
                                     );
                                   },
                                 ),
-                                if (unreadNotifs > 0)
-                                  Positioned(
-                                    top: 4,
-                                    right: 4,
-                                    child: Container(
-                                      width: 16,
-                                      height: 16,
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.error,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          '$unreadNotifs',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.bold,
+                                const SizedBox(width: 8),
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    _buildCircularHeaderButton(
+                                      icon: Icons.notifications_none,
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const ProviderNotificationsScreen(),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    if (unreadNotifs > 0)
+                                      Positioned(
+                                        top: 4,
+                                        right: 4,
+                                        child: Container(
+                                          width: 16,
+                                          height: 16,
+                                          decoration: const BoxDecoration(
+                                            color: AppColors.error,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '$unreadNotifs',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 9,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ),
+                                  ],
+                                ),
                               ],
                             ),
                           ],
@@ -414,7 +436,79 @@ class _ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 18),
+
+                        // Live Customer Chat Action Banner
+                        InkWell(
+                          onTap: () {
+                            final prov = _appState.providers.firstWhere(
+                              (p) => p.id == 'prov_nisansala' || p.id == 'prov_nadesha',
+                              orElse: () => _appState.providers.first,
+                            );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ProviderChatScreen(provider: prov),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF0F2B20), Color(0xFF1B4332)],
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.08),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.15),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
+                                ),
+                                const SizedBox(width: 14),
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Live Customer Chat',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      SizedBox(height: 2),
+                                      Text(
+                                        'Chat directly with homeowners in real-time',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(Icons.arrow_forward_ios, color: Colors.white70, size: 14),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
 
                         // "New requests (X)" Header
                         Text(

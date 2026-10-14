@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/common_widgets.dart';
@@ -29,9 +31,52 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
   bool _agreedToTerms = false;
   bool _hasSigned = false;
   String? _signedName; // set when Quick Sign is used
+  Uint8List? _uploadedSignatureBytes;
+  String? _uploadedSignatureName;
+  bool _pickingSignature = false;
   final List<Offset?> _points = [];
   final AppStateService _appState = AppStateService();
   final TextEditingController _amendmentController = TextEditingController();
+
+  Future<void> _pickSignatureImage() async {
+    if (_pickingSignature) return;
+    setState(() => _pickingSignature = true);
+    try {
+      final files = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'webp', 'pdf'],
+      );
+      if (files.isEmpty) return;
+      final file = files.first;
+      final size = await file.length();
+      if (size == null || size <= 0 || size > 5 * 1024 * 1024) {
+        throw StateError('Choose a signature image smaller than 5 MB.');
+      }
+      final bytes = await file.readAsBytes();
+      if (bytes.isEmpty || bytes.length > 5 * 1024 * 1024) {
+        throw StateError('Choose a signature image smaller than 5 MB.');
+      }
+      if (!mounted) return;
+      setState(() {
+        _uploadedSignatureBytes = bytes;
+        _uploadedSignatureName = file.name;
+        _points.clear();
+        _signedName = null;
+        _hasSigned = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Uploaded signature: ${file.name}')),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not upload signature: $error')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _pickingSignature = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -170,6 +215,8 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
       _points.clear();
       _points.addAll(strokes);
       _signedName = name;
+      _uploadedSignatureBytes = null;
+      _uploadedSignatureName = null;
       _hasSigned = true;
     });
   }
@@ -184,13 +231,16 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
 
     if (!_hasSigned) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please draw your digital signature or tap Quick Sign.')),
+        const SnackBar(content: Text('Please draw your signature, upload a signature image, or tap Quick Sign.')),
       );
       return;
     }
 
     // CRUD: UPDATE sign digital contract and lock deposit in state
-    _appState.signContractAndPayDeposit(activeBooking.id, 'SHA256-CANVAS-SIG-VALIDATED');
+    final sigHash = _uploadedSignatureBytes != null
+        ? 'SHA256-IMAGE-SIG-${_uploadedSignatureName ?? "VERIFIED"}'
+        : 'SHA256-CANVAS-SIG-VALIDATED';
+    _appState.signContractAndPayDeposit(activeBooking.id, sigHash);
 
     Navigator.push(
       context,
@@ -397,6 +447,18 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                       children: [
                         TextButton.icon(
                           style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
+                          icon: _pickingSignature
+                              ? const SizedBox(
+                                  width: 12,
+                                  height: 12,
+                                  child: CircularProgressIndicator(strokeWidth: 1.5),
+                                )
+                              : const Icon(Icons.upload_file, size: 13, color: AppColors.primary),
+                          label: const Text('Upload Image', style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.bold)),
+                          onPressed: _pickingSignature ? null : _pickSignatureImage,
+                        ),
+                        TextButton.icon(
+                          style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
                           icon: const Icon(Icons.draw, size: 13, color: AppColors.primary),
                           label: const Text('Quick Sign', style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.bold)),
                           onPressed: () => _quickSign(activeBooking.providerName.split(' ').first),
@@ -411,6 +473,8 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                               setState(() {
                                 _points.clear();
                                 _signedName = null;
+                                _uploadedSignatureBytes = null;
+                                _uploadedSignatureName = null;
                                 _hasSigned = false;
                               });
                             },
@@ -421,12 +485,12 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                 ),
                 const SizedBox(height: 4),
                 const Text(
-                  'Draw your signature below, or tap Quick Sign to generate one.',
+                  'Draw with finger/mouse, upload handwritten signature photo, or tap Quick Sign.',
                   style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 8),
 
-                // Clean Drawing Canvas
+                // Clean Drawing Canvas / Uploaded Signature Preview
                 Container(
                   height: 130,
                   width: double.infinity,
@@ -442,30 +506,55 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                     borderRadius: BorderRadius.circular(14),
                     child: Stack(
                       children: [
-                        GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onPanStart: (DragStartDetails details) {
-                            setState(() {
-                              _points.add(details.localPosition);
-                              _hasSigned = true;
-                            });
-                          },
-                          onPanUpdate: (DragUpdateDetails details) {
-                            setState(() {
-                              _points.add(details.localPosition);
-                              _hasSigned = true;
-                            });
-                          },
-                          onPanEnd: (DragEndDetails details) {
-                            setState(() {
-                              _points.add(null);
-                            });
-                          },
-                          child: CustomPaint(
-                            painter: SignaturePainter(points: _points),
-                            size: Size.infinite,
+                        if (_uploadedSignatureBytes != null)
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              child: Image.memory(
+                                _uploadedSignatureBytes!,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) => Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.description, size: 32, color: AppColors.primary),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _uploadedSignatureName ?? 'Signature File',
+                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        else
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onPanStart: (DragStartDetails details) {
+                              setState(() {
+                                _points.add(details.localPosition);
+                                _hasSigned = true;
+                                _signedName = null;
+                                _uploadedSignatureBytes = null;
+                                _uploadedSignatureName = null;
+                              });
+                            },
+                            onPanUpdate: (DragUpdateDetails details) {
+                              setState(() {
+                                _points.add(details.localPosition);
+                                _hasSigned = true;
+                              });
+                            },
+                            onPanEnd: (DragEndDetails details) {
+                              setState(() {
+                                _points.add(null);
+                              });
+                            },
+                            child: CustomPaint(
+                              painter: SignaturePainter(points: _points),
+                              size: Size.infinite,
+                            ),
                           ),
-                        ),
                         if (!_hasSigned)
                           const Center(
                             child: Row(
@@ -490,7 +579,12 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                                 color: const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(6),
                               ),
-                              child: const Text('ID: SHA256-DIGITAL-STAMP', style: TextStyle(fontSize: 9, color: Colors.grey)),
+                              child: Text(
+                                _uploadedSignatureBytes != null
+                                    ? 'ID: SHA256-IMAGE-SIG'
+                                    : 'ID: SHA256-DIGITAL-STAMP',
+                                style: const TextStyle(fontSize: 9, color: Colors.grey),
+                              ),
                             ),
                           ),
                       ],
@@ -498,17 +592,34 @@ class _DigitalContractDepositScreenState extends State<DigitalContractDepositScr
                   ),
                 ),
 
-                // Show name label when Quick Sign was used
-                if (_hasSigned && _signedName != null)
+                // Show label when Handwritten Signature was uploaded or Quick Sign was used
+                if (_hasSigned && _uploadedSignatureBytes != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle, size: 13, color: Color(0xFF15803D)),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            'Official handwritten signature uploaded (${_uploadedSignatureName ?? "photo"})',
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 10, color: Color(0xFF15803D), fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else if (_hasSigned && _signedName != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Row(
                       children: [
                         const Icon(Icons.verified, size: 13, color: Color(0xFF15803D)),
                         const SizedBox(width: 5),
-                        Text(
+                        const Text(
                           'Digitally signed — signature generated for this session',
-                          style: const TextStyle(fontSize: 10, color: Color(0xFF15803D), fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 10, color: Color(0xFF15803D), fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),

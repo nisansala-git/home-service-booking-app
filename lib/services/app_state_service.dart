@@ -47,6 +47,14 @@ class AppStateService extends ChangeNotifier {
       _chatMessages.clear();
       _chatMessages.addAll(results[4] as List<ChatMessage>);
       _firestoreReady = true;
+      _startChatListener();
+
+      // Ensure updated providers (including phone 076 034 4720) exist in Firestore
+      for (final p in MockData.providers) {
+        if (p.id == 'prov_nadesha' || p.id == 'prov_nisansala') {
+          _fs.saveProvider(p).catchError((_) {});
+        }
+      }
     } catch (e) {
       // Firestore unavailable — keep in-memory mock data as fallback
       debugPrint('[AppStateService] Firestore load failed, using mock data: $e');
@@ -54,6 +62,22 @@ class AppStateService extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  StreamSubscription? _chatSubscription;
+
+  void _startChatListener() {
+    if (!_firestoreReady) return;
+    _chatSubscription?.cancel();
+    _chatSubscription = _fs.watchChatMessages().listen((messages) {
+      if (messages.isNotEmpty) {
+        _chatMessages.clear();
+        _chatMessages.addAll(messages);
+        notifyListeners();
+      }
+    }, onError: (e) {
+      debugPrint('[AppStateService] Live chat stream error: $e');
+    });
   }
 
   StreamSubscription? _providerSubscription;
@@ -295,6 +319,25 @@ _persist(() => _fs.saveBooking(newBooking)); // persist
     notifyListeners();
   }
 
+  /// NFR007: Check if a slot is already confirmed/booked for a given provider
+  bool isSlotBooked(String providerId, DateTime date, String timeSlot) {
+    return _bookings.any((b) =>
+        b.providerId == providerId &&
+        b.bookingDate.year == date.year &&
+        b.bookingDate.month == date.month &&
+        b.bookingDate.day == date.day &&
+        b.timeSlot == timeSlot &&
+        b.status != 'Cancelled');
+  }
+
+  /// NFR007: Combined check — slot is unavailable if locked by another user OR already booked
+  bool isSlotUnavailable(String providerId, DateTime date, String timeSlot, {String? currentUserSlotKey}) {
+    final slotKey = '${date.year}-${date.month}-${date.day}_$timeSlot';
+    // Allow the current user's own locked slot
+    if (slotKey == currentUserSlotKey) return false;
+    return isSlotLocked(slotKey) || isSlotBooked(providerId, date, timeSlot);
+  }
+
   // UPDATE: Reschedule or modify booking details (Member 2 - Booking Confirmation)
   void updateBookingDetails({
     required String bookingId,
@@ -448,8 +491,12 @@ _persist(() => _fs.saveBooking(newBooking)); // persist
   ];
   List<ChatMessage> get chatMessages => _chatMessages;
 
-  List<ChatMessage> getMessagesForBooking(String bookingId) {
-    return _chatMessages.where((m) => m.bookingId == bookingId).toList();
+  List<ChatMessage> getMessagesForBooking(String bookingId, {String? providerId}) {
+    return _chatMessages.where((m) {
+      if (m.bookingId == bookingId) return true;
+      if (providerId != null && m.providerId == providerId) return true;
+      return false;
+    }).toList();
   }
 
   void sendChatMessage({
@@ -458,6 +505,8 @@ _persist(() => _fs.saveBooking(newBooking)); // persist
     required String senderId,
     required String senderName,
     required String text,
+    String? imageBase64,
+    String? imageName,
   }) {
     _chatMessages.add(
       ChatMessage(
@@ -468,6 +517,8 @@ _persist(() => _fs.saveBooking(newBooking)); // persist
         senderName: senderName,
         text: text,
         timestamp: DateTime.now(),
+        imageBase64: imageBase64,
+        imageName: imageName,
       ),
     );
 _persist(() => _fs.saveChatMessage(_chatMessages.last)); // persist

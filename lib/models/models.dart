@@ -290,6 +290,8 @@ class ChatMessage {
   final String senderName;
   final String text;
   final DateTime timestamp;
+  final String? imageBase64;
+  final String? imageName;
 
   ChatMessage({
     required this.id,
@@ -299,6 +301,8 @@ class ChatMessage {
     required this.senderName,
     required this.text,
     required this.timestamp,
+    this.imageBase64,
+    this.imageName,
   });
 
   Map<String, dynamic> toMap() => {
@@ -309,6 +313,8 @@ class ChatMessage {
     'senderName': senderName,
     'text': text,
     'timestamp': timestamp.toIso8601String(),
+    if (imageBase64 != null) 'imageBase64': imageBase64,
+    if (imageName != null) 'imageName': imageName,
   };
 
   factory ChatMessage.fromMap(Map<String, dynamic> map, String docId) => ChatMessage(
@@ -319,5 +325,7 @@ class ChatMessage {
     senderName: map['senderName'] ?? '',
     text: map['text'] ?? '',
     timestamp: DateTime.tryParse(map['timestamp'] ?? '') ?? DateTime.now(),
+    imageBase64: map['imageBase64'],
+    imageName: map['imageName'],
   );
 }
