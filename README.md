@@ -146,7 +146,8 @@ flutter build apk --release
 ```
 The file is created at `build/app/outputs/flutter-apk/app-release.apk`. Copy it to an Android phone and open it to install. If the phone asks, allow "Install from this source".
 
-**Installable build (Google Drive):** ADD-YOUR-LINK-HERE
+**Installable build (Google Drive):** 
+https://drive.google.com/file/d/1rZbEaFcyPT-Xc1u-M9Y9nQ8fS7N7bZJL/view?usp=sharing
 
 ### Notes
 - The Firestore database was created in test mode, so its rules are open and expire 30 days after creation. This is acceptable for a coursework demo, but real security rules are needed for production use.
